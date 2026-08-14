@@ -57,8 +57,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   }, [salonInfo]);
 
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('luxury2026');
+  const [username, setUsername] = useState('khushbusingh');
+  const [password, setPassword] = useState('khushbu@6971');
   const [loginError, setLoginError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -108,14 +108,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   if (!isOpen) return null;
 
   const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if ((username === 'admin' || username === 'khushboo') && (password === 'luxury2026' || password === 'admin123')) {
+    if (username === 'khushbusingh' && password === 'khushbu@6971') {
       setIsLoggedIn(true);
       setLoginError('');
     } else {
-      setLoginError('Invalid credentials. (Demo: admin / luxury2026)');
+      setLoginError('Galat Username ya Password! Kripya sahi details daalein.');
     }
-  };
+    }
+  };   e.preventDefault();
+    if ((username ===
 
   const handleStatusChange = async (aptId: string, newStatus: Appointment['status']) => {
     const updated = await salonService.updateAppointmentStatus(aptId, newStatus);
@@ -368,9 +369,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <p className="text-xs text-rose-500 bg-rose-500/10 p-2 rounded-lg">{loginError}</p>
               )}
 
-              <div className="p-3 bg-stone-100 dark:bg-stone-900 rounded-xl text-[11px] text-stone-500">
-                <span>Demo credentials: username: <strong>admin</strong> | password: <strong>luxury2026</strong></span>
-              </div>
+              
 
               <button
                 type="submit"
