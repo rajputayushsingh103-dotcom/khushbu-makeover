@@ -51,17 +51,24 @@ app.get("/api/health", (req, res) => {
   res.json({ status: "ok", salon: "Khushboo Makeover", time: new Date().toISOString() });
 });
 
-// Admin Authentication endpoint
+// Admin Authentication endpoint (Updated with your credentials)
 app.post("/api/admin/login", (req, res) => {
   const { username, password } = req.body;
-  if ((username === "admin" || username === "khushboo") && (password === "luxury2026" || password === "admin123" || password === "khushboo2026")) {
+
+  const ADMIN_USERNAME = "khushbusingh";
+  const ADMIN_PASSWORD = "khushbu@6971";
+
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
     res.json({
       success: true,
       token: "km_admin_session_" + Date.now(),
-      user: { username: "Khushboo Sharma (Admin)", role: "Director & Lead Artist" }
+      user: { username: "Khushboo Singh (Admin)", role: "Director & Lead Artist" }
     });
   } else {
-    res.status(401).json({ success: false, message: "Invalid credentials. Try username: admin, password: luxury2026" });
+    res.status(401).json({ 
+      success: false, 
+      message: "Galat Username ya Password!" 
+    });
   }
 });
 
