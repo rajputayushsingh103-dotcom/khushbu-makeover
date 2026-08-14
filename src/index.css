@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-serif: 'Playfair Display', Georgia, serif;
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-sans);
+  }
+
+  h1, h2, h3, .font-serif {
+    font-family: var(--font-serif);
+  }
+
+  .font-cormorant {
+    font-family: var(--font-display);
+  }
+}
+
+/* Custom Rose Gold Shimmer and Luxury Effects */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(224, 169, 109, 0.25); }
+  50% { box-shadow: 0 0 30px rgba(224, 169, 109, 0.55); }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, rgba(224,169,109,0.1) 0%, rgba(224,169,109,0.3) 50%, rgba(224,169,109,0.1) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAF7F5;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E0A96D;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #C58F5E;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #141213;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #8C5E35;
+}
+
+/* Glassmorphism helpers */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(224, 169, 109, 0.2);
+}
+
+.dark .glass-panel {
+  background: rgba(26, 24, 25, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(224, 169, 109, 0.15);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(224, 169, 109, 0.22);
+  box-shadow: 0 10px 30px -10px rgba(183, 110, 121, 0.08);
+}
+
+.dark .glass-card {
+  background: rgba(28, 25, 26, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(224, 169, 109, 0.18);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* Rose gold metallic text */
+.text-rose-gold-gradient {
+  background: linear-gradient(135deg, #B76E79 0%, #E0A96D 50%, #C58F5E 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-rose-gold-gradient {
+  background: linear-gradient(135deg, #B76E79 0%, #E0A96D 50%, #C58F5E 100%);
+}
+
+.bg-rose-gold-subtle {
+  background: linear-gradient(135deg, rgba(224, 169, 109, 0.12) 0%, rgba(183, 110, 121, 0.12) 100%);
+}
+

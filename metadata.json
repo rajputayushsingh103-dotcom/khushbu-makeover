@@ -1,0 +1,6 @@
+{
+  "name": "Khushboo Makeover - Luxury Salon & Bridal Studio",
+  "description": "Premium luxury beauty salon & bridal studio offering HD makeup, bridal artistry, hair spa, skin treatments, and online appointment booking.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
