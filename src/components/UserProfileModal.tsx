@@ -159,6 +159,7 @@ export const UserProfileModal: React.FC<Props> = ({ user, isOpen, onClose, onLog
             onClick={() => {
               onLogout();
               onClose();
+                window.location.reload(); 
             }}
             className="text-xs font-semibold text-red-500 hover:text-red-600 hover:underline"
           >

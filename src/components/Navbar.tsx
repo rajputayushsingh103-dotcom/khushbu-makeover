@@ -51,6 +51,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const handleLogout = () => {
     localStorage.removeItem('km_user');
     setCurrentUser(null);
+     window.location.reload();
   };
 
   useEffect(() => {

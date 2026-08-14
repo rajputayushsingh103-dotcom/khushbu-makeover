@@ -3,13 +3,13 @@ import { Service, Review, GalleryItem, Offer, TeamMember, BlogPost, FAQItem, Sal
 export const SALON_INFO: SalonInfo = {
   name: 'Khushboo Makeover',
   tagline: 'Luxury Salon & Bridal Artistry Studio',
-  founder: 'Khushboo Sharma',
+  founder: 'Khushboo Singh',
   founderTitle: 'Celebrity Makeup Artist & Creative Director',
   founderBio: 'Over 15+ years perfecting bespoke bridal, HD airbrush, and celebrity red carpet artistry with international diploma from London.',
   founderImage: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=1000&q=80',
   phone: '+91 98765 43210',
-  phoneAlt: '+91 98765 43211',
-  whatsapp: '+919876543210',
+  phoneAlt: '+91 9598538006',
+  whatsapp: '+919598538006',
   email: 'appointments@khushboomakeover.com',
   // Address & Location Details
   address: 'Suite 402, 4th Floor, Royal Palms Luxury Arcade, Opp. Grand Hyatt, Linking Road, Bandra West, Mumbai',
