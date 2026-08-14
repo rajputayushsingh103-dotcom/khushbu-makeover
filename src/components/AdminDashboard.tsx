@@ -57,8 +57,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   }, [salonInfo]);
 
-  const [username, setUsername] = useState('khushbusingh');
-  const [password, setPassword] = useState('khushbu@6971');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
