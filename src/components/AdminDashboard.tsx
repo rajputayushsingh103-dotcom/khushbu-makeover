@@ -108,21 +108,23 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   if (!isOpen) return null;
 
   const handleLogin = (e: React.FormEvent) => {
-    if (username === 'khushbusingh' && password === 'khushbu@6971') {
-      setIsLoggedIn(true);
-      setLoginError('');
-    } else {
-      setLoginError('Galat Username ya Password! Kripya sahi details daalein.');
-    }
-    }
-  };   e.preventDefault();
-    if ((username ===
+  e.preventDefault();
 
-  const handleStatusChange = async (aptId: string, newStatus: Appointment['status']) => {
-    const updated = await salonService.updateAppointmentStatus(aptId, newStatus);
-    setAppointments(updated);
-  };
+  if (username === 'khushbusingh' && password === 'khushbu@6971') {
+    setIsLoggedIn(true);
+    setLoginError('');
+  } else {
+    setLoginError('Galat Username ya Password! Kripya sahi details daalein.');
+  }
+};
 
+const handleStatusChange = async (
+  aptId: string,
+  newStatus: Appointment['status']
+) => {
+  const updated = await salonService.updateAppointmentStatus(aptId, newStatus);
+  setAppointments(updated);
+};
   const handleDeleteAppointment = async (aptId: string) => {
     if (confirm('Delete this appointment record?')) {
       const updated = await salonService.deleteAppointment(aptId);
