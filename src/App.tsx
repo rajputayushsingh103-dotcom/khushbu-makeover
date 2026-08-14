@@ -1,3 +1,4 @@
+import { AuthScreen } from './components/AuthScreen';
 import React, { useState, useEffect } from 'react';
 import {
   Sparkles, Calendar, ArrowRight, Star, Award, ShieldCheck, Heart, Users,
@@ -31,6 +32,16 @@ import { ScrollToTop } from './components/ScrollToTop';
 import { LegalModals } from './components/LegalModals';
 
 export default function App() {
+  // ⭐ User Login & Auth State
+  const [currentUser, setCurrentUser] = useState<any>(() => {
+    try {
+      const saved = localStorage.getItem('km_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
   // Navigation & View State
   const [currentPage, setCurrentPage] = useState<PageView>('home');
 
@@ -68,6 +79,10 @@ export default function App() {
   const [serviceSearch, setServiceSearch] = useState<string>('');
   const [priceSort, setPriceSort] = useState<'default' | 'low-to-high' | 'high-to-low'>('default');
 
+  // 🔒 AGAR USER LOGIN NAHI HAI TO SIRF AUTH/LOGIN SCREEN DIKHEGI:
+  if (!currentUser) {
+    return <AuthScreen onLoginSuccess={(user) => setCurrentUser(user)} />;
+  }
   // Synchronize Dark Mode Class
   useEffect(() => {
     if (darkMode) {
