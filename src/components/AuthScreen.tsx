@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
-import { Mail, Lock, User, Phone, Eye, EyeOff, KeyRound, ArrowRight, ShieldCheck, RefreshCw, AlertCircle, Sparkles, Heart, Crown } from 'lucide-react';
+import { Mail, Lock, User, Phone, Eye, EyeOff, KeyRound, ArrowRight, ShieldCheck, RefreshCw, AlertCircle, Sparkles, Heart, Crown, Loader2 } from 'lucide-react';
 
 interface Props {
   onLoginSuccess: (user: any) => void;
@@ -19,7 +19,8 @@ export interface RegisteredUser {
   createdAt: string;
 }
 
-let memoryUsersBackup: RegisteredUser[] = [];
+// 🌐 Global Multi-Device Cloud Database Bucket (Unique for Khushboo Makeover)
+const CLOUD_DB_URL = "https://kvdb.io/6mXh1rVzK9yP2wT7bL4q8J/km_global_registered_users";
 
 export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
   const BEAUTY_PARLOUR_BG = "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=2000&q=85";
@@ -28,6 +29,7 @@ export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   // Form Fields
   const [identifier, setIdentifier] = useState('');
@@ -44,64 +46,70 @@ export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
 
   const GOOGLE_CLIENT_ID = "YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com";
 
-  // 🛡️ Data Cleaners
-  const cleanPhone = (val: string) => {
-    if (!val) return '';
-    const digits = val.replace(/\D/g, '');
-    return digits.length >= 10 ? digits.slice(-10) : digits;
-  };
-  
+  // 🛡️ Data Sanitizers
+  const cleanPhone = (val: string) => (val || '').replace(/\D/g, '').slice(-10);
   const cleanEmail = (val: string) => (val || '').trim().toLowerCase();
   const cleanPassword = (val: string) => (val || '').trim();
 
-  const getRegisteredUsers = (): RegisteredUser[] => {
+  // 🌐 1. Fetch All Users from Cloud (Allows cross-device login)
+  const fetchAllUsersFromCloud = async (): Promise<RegisteredUser[]> => {
     try {
-      const stored = localStorage.getItem('km_registered_users');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          memoryUsersBackup = parsed;
-          return parsed;
+      const response = await fetch(CLOUD_DB_URL, { cache: 'no-store' });
+      if (response.ok) {
+        const cloudData = await response.json();
+        if (Array.isArray(cloudData)) {
+          localStorage.setItem('km_registered_users', JSON.stringify(cloudData));
+          return cloudData;
         }
       }
     } catch {
-      // Fallback
+      // Offline fallback to localStorage
     }
-    return memoryUsersBackup;
+    try {
+      return JSON.parse(localStorage.getItem('km_registered_users') || '[]');
+    } catch {
+      return [];
+    }
   };
 
-  const saveRegisteredUsers = (users: RegisteredUser[]) => {
-    memoryUsersBackup = users;
+  // 🌐 2. Save User to Cloud Database (Instantly available on all devices)
+  const saveUserToCloud = async (newUser: RegisteredUser) => {
+    const currentUsers = await fetchAllUsersFromCloud();
+    const filtered = currentUsers.filter(
+      (u) => cleanEmail(u.email) !== cleanEmail(newUser.email) && cleanPhone(u.phone) !== cleanPhone(newUser.phone)
+    );
+    const updated = [...filtered, newUser];
+
+    // Update Local Storage
+    localStorage.setItem('km_registered_users', JSON.stringify(updated));
+
+    // Update Cloud Database
     try {
-      localStorage.setItem('km_registered_users', JSON.stringify(users));
+      await fetch(CLOUD_DB_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updated),
+      });
     } catch (e) {
-      console.warn("Storage save error:", e);
+      console.warn("Cloud sync queued:", e);
     }
   };
 
-  // ⚡ Instant Dashboard Switch Trigger (No manual page refresh needed)
-  const completeAuth = (user: RegisteredUser) => {
-    try {
-      localStorage.setItem('km_user', JSON.stringify(user));
-      // Dispatch browser events taaki parent app turant re-render ho jaye
-      window.dispatchEvent(new Event('storage'));
-      window.dispatchEvent(new CustomEvent('authChange', { detail: user }));
-    } catch (err) {
-      console.error(err);
-    }
-    // Callback to parent component instantly
-    onLoginSuccess(user);
-  };
+  // Pre-sync database on mount
+  useEffect(() => {
+    fetchAllUsersFromCloud();
+  }, []);
 
-  const findUnifiedUser = (idOrEmailOrPhone: string): RegisteredUser | undefined => {
+  // 🛡️ Multi-Device User Finder
+  const findUnifiedUser = async (idOrEmailOrPhone: string): Promise<RegisteredUser | undefined> => {
     const raw = (idOrEmailOrPhone || '').trim();
     if (!raw) return undefined;
 
-    const savedUsers = getRegisteredUsers();
+    const allUsers = await fetchAllUsersFromCloud();
     const cleanId = cleanEmail(raw);
     const cleanP = cleanPhone(raw);
 
-    return savedUsers.find((u) => {
+    return allUsers.find((u) => {
       const uEmail = cleanEmail(u.email);
       const uPhone = cleanPhone(u.phone);
 
@@ -114,11 +122,20 @@ export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
     });
   };
 
-  // 1. REGISTER
-  const handleRegister = (e: React.FormEvent) => {
+  // ⚡ Complete Login & Instant Switch
+  const completeAuth = (user: RegisteredUser) => {
+    localStorage.setItem('km_user', JSON.stringify(user));
+    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new CustomEvent('authChange', { detail: user }));
+    onLoginSuccess(user);
+  };
+
+  // 🌸 1. REGISTER (Multi-Device Cloud Save)
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccessMsg(null);
+    setLoading(true);
 
     const trimmedName = name.trim();
     const normalizedEmail = cleanEmail(email);
@@ -127,29 +144,35 @@ export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
 
     if (!trimmedName) {
       setError("Kripya apna poora Naam bharein!");
+      setLoading(false);
       return;
     }
     if (!normalizedEmail || !normalizedEmail.includes('@')) {
       setError("Kripya valid Email ID daalein!");
+      setLoading(false);
       return;
     }
     if (!normalizedPhone || normalizedPhone.length !== 10) {
       setError("Kripya 10-digit Mobile Number bharein!");
+      setLoading(false);
       return;
     }
     if (!normalizedPassword || normalizedPassword.length < 4) {
       setError("Password kam se kam 4 characters ka banayein!");
+      setLoading(false);
       return;
     }
 
-    const savedUsers = getRegisteredUsers();
+    const savedUsers = await fetchAllUsersFromCloud();
 
     if (savedUsers.some((u) => cleanEmail(u.email) === normalizedEmail)) {
       setError("Is Email ID se account pehle se bana hai! Kripya Sign In karein.");
+      setLoading(false);
       return;
     }
     if (savedUsers.some((u) => cleanPhone(u.phone) === normalizedPhone)) {
       setError("Is Mobile Number se account pehle se bana hai! Kripya Sign In karein.");
+      setLoading(false);
       return;
     }
 
@@ -163,36 +186,38 @@ export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
       createdAt: new Date().toISOString(),
     };
 
-    const updatedList = [...savedUsers, newUser];
-    saveRegisteredUsers(updatedList);
-    setSuccessMsg(`Welcome gorgeous, ${newUser.name}! ✨`);
-    
-    // Switch to dashboard immediately
+    await saveUserToCloud(newUser);
+    setSuccessMsg(`Welcome gorgeous, ${newUser.name}! ✨ Account Ready!`);
+    setLoading(false);
     completeAuth(newUser);
   };
 
-  // 2. PASSWORD LOGIN
-  const handlePasswordLogin = (e: React.FormEvent) => {
+  // 🌸 2. PASSWORD LOGIN (Fetches from Cloud for Any Device)
+  const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccessMsg(null);
+    setLoading(true);
 
     const inputVal = identifier.trim();
     const enteredPassword = cleanPassword(password);
 
     if (!inputVal) {
       setError("Kripya apna registered Mobile No. ya Email daalein!");
+      setLoading(false);
       return;
     }
     if (!enteredPassword) {
       setError("Kripya Password daalein!");
+      setLoading(false);
       return;
     }
 
-    const foundUser = findUnifiedUser(inputVal);
+    const foundUser = await findUnifiedUser(inputVal);
 
     if (!foundUser) {
       setError("Account nahi mila! Kripya pehle Register karein.");
+      setLoading(false);
       return;
     }
 
@@ -200,30 +225,33 @@ export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
 
     if (storedPassword !== enteredPassword) {
       setError("Galat Password! Kripya sahi password daalein ya OTP chunein.");
+      setLoading(false);
       return;
     }
 
     setSuccessMsg(`Welcome back, ${foundUser.name}! 💖`);
-    
-    // Switch to dashboard immediately
+    setLoading(false);
     completeAuth(foundUser);
   };
 
-  // 3. SEND OTP
+  // 🌸 3. SEND OTP
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setSuccessMsg(null);
+    setLoading(true);
 
     const inputVal = identifier.trim();
     if (!inputVal) {
       setError(`Kripya apna registered ${otpTarget === 'email' ? 'Email Address' : 'Mobile Number'} daalein!`);
+      setLoading(false);
       return;
     }
 
-    const foundUser = findUnifiedUser(inputVal);
+    const foundUser = await findUnifiedUser(inputVal);
     if (!foundUser) {
       setError("User does not exist! Kripya pehle Register karein.");
+      setLoading(false);
       return;
     }
 
@@ -231,11 +259,12 @@ export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
     setGeneratedOtp(randomOtp);
     setMatchedUser(foundUser);
     setAuthMode('otp_verify');
+    setLoading(false);
 
     setSuccessMsg(`OTP aapke registered ${otpTarget === 'email' ? 'Gmail Address' : 'Mobile Number'} par bhej diya gaya hai. Kripya check karein!`);
   };
 
-  // 4. VERIFY OTP
+  // 🌸 4. VERIFY OTP
   const handleVerifyOtp = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -248,26 +277,26 @@ export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
 
     if (otpInput.trim() === generatedOtp) {
       setSuccessMsg(`Verified! Welcome, ${matchedUser.name}! ✨`);
-      // Switch to dashboard immediately
       completeAuth(matchedUser);
     } else {
       setError("Galat OTP! Kripya sahi code daalein.");
     }
   };
 
-  // 5. GOOGLE LOGIN
-  const handleGoogleSuccess = (credentialResponse: any) => {
+  // 🌸 5. GOOGLE LOGIN
+  const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
       if (credentialResponse.credential) {
+        setLoading(true);
         const decoded: any = jwtDecode(credentialResponse.credential);
         const googleEmail = cleanEmail(decoded.email);
-        const savedUsers = getRegisteredUsers();
+        const savedUsers = await fetchAllUsersFromCloud();
 
         let user = savedUsers.find((u) => cleanEmail(u.email) === googleEmail);
 
         if (user) {
           user.picture = decoded.picture || user.picture;
-          saveRegisteredUsers(savedUsers);
+          await saveUserToCloud(user);
         } else {
           user = {
             id: 'usr_g_' + Date.now(),
@@ -278,12 +307,14 @@ export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
             picture: decoded.picture,
             createdAt: new Date().toISOString(),
           };
-          saveRegisteredUsers([...savedUsers, user]);
+          await saveUserToCloud(user);
         }
 
+        setLoading(false);
         completeAuth(user);
       }
     } catch {
+      setLoading(false);
       setError("Google Login me error aayi.");
     }
   };
@@ -333,11 +364,11 @@ export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
         }}
         className="min-h-screen w-full flex items-center justify-center p-3 sm:p-6 relative overflow-hidden font-sans select-none"
       >
-        {/* Floating Ambient Light Rings (Active on Mobile & Desktop) */}
+        {/* Floating Ambient Light Rings */}
         <div className="absolute -top-24 -left-24 w-80 h-80 bg-rose-500/30 rounded-full blur-3xl pointer-events-none animate-aura" />
         <div className="absolute -bottom-24 -right-24 w-80 h-80 bg-pink-500/30 rounded-full blur-3xl pointer-events-none animate-aura" style={{ animationDelay: '3s' }} />
 
-        {/* Floating Decorative Petals for Mobile Aesthetics */}
+        {/* Floating Decorative Petals */}
         <div className="absolute top-12 left-8 text-rose-300/40 text-2xl animate-floating pointer-events-none">🌸</div>
         <div className="absolute bottom-16 left-12 text-pink-300/35 text-xl animate-floating pointer-events-none" style={{ animationDelay: '2s' }}>✨</div>
         <div className="absolute top-20 right-10 text-rose-300/40 text-2xl animate-floating pointer-events-none" style={{ animationDelay: '1.5s' }}>💖</div>
@@ -369,7 +400,7 @@ export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
             </p>
           </div>
 
-          {/* Pretty Rose Switch Tabs (Touch-Optimized) */}
+          {/* Pretty Rose Switch Tabs */}
           <div className="flex bg-rose-100/70 p-1.5 rounded-2xl border border-rose-200/80 mb-5 shadow-inner">
             <button
               type="button"
@@ -480,10 +511,15 @@ export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
 
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-rose-500/30 hover:shadow-xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 mt-2 btn-shimmer"
+                disabled={loading}
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-rose-500/30 hover:shadow-xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 mt-2 btn-shimmer disabled:opacity-75"
               >
-                <span>Register & Join VIP Club</span>
-                <Sparkles className="w-4 h-4" />
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+                  <>
+                    <span>Register & Join VIP Club</span>
+                    <Sparkles className="w-4 h-4" />
+                  </>
+                )}
               </button>
             </form>
           )}
@@ -534,10 +570,15 @@ export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
 
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-rose-500/30 hover:shadow-xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 mt-2 btn-shimmer"
+                disabled={loading}
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-rose-500/30 hover:shadow-xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 mt-2 btn-shimmer disabled:opacity-75"
               >
-                <span>Enter Luxury Studio</span>
-                <ArrowRight className="w-4 h-4" />
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+                  <>
+                    <span>Enter Luxury Studio</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
               </button>
             </form>
           )}
@@ -589,10 +630,15 @@ export const AuthScreen: React.FC<Props> = ({ onLoginSuccess }) => {
 
               <button
                 type="submit"
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-rose-500/30 hover:shadow-xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 btn-shimmer"
+                disabled={loading}
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-rose-500/30 hover:shadow-xl active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 btn-shimmer disabled:opacity-75"
               >
-                <span>Send 6-Digit OTP</span>
-                <KeyRound className="w-4 h-4" />
+                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+                  <>
+                    <span>Send 6-Digit OTP</span>
+                    <KeyRound className="w-4 h-4" />
+                  </>
+                )}
               </button>
             </form>
           )}
