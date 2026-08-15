@@ -22,9 +22,10 @@ export const Footer: React.FC<FooterProps> = ({
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
 
-  const addressText = typeof info.address === 'string'
-    ? info.address
-    : [info.address?.street, info.address?.landmark, info.address?.city, info.address?.state].filter(Boolean).join(', ');
+  // 📍 Studio Official Address
+  const EXACT_STUDIO_ADDRESS = "Near Dolphin Public School, VILLAGE CHHEETPUR, POST, Dileeppur, Cheetpur, Uttar Pradesh 230127, India";
+
+  const addressText = EXACT_STUDIO_ADDRESS;
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +52,7 @@ export const Footer: React.FC<FooterProps> = ({
                 Ready to Experience Royal Beauty Artistry?
               </h3>
               <p className="text-stone-300 text-sm sm:text-base mt-2">
-                Reserve your bridal makeover or luxury hair and skincare session with Master Artist {info.founder || 'Khushboo Sharma'}.
+                Reserve your bridal makeover or luxury hair and skincare session with Master Artist {info.founder || "Khushbu's Makeover"}.
               </p>
             </div>
 
@@ -65,7 +66,7 @@ export const Footer: React.FC<FooterProps> = ({
                 <ArrowRight className="w-4 h-4" />
               </button>
               <a
-                href={`https://wa.me/${(info.whatsapp || '919876543210').replace(/\D/g, '')}?text=Hello%20${encodeURIComponent(info.name || 'Khushboo Makeover')},%20I%20would%20like%20to%20inquire%20about%20booking%20an%20appointment.`}
+                href={`https://wa.me/${(info.whatsapp || '95985 38006').replace(/\D/g, '')}?text=Hello%20${encodeURIComponent(info.name || "Khushbu's Makeover")},%20I%20would%20like%20to%20inquire%20about%20booking%20an%20appointment.`}
                 target="_blank"
                 rel="noreferrer"
                 className="px-6 py-3.5 rounded-full border border-[#E0A96D]/40 text-[#E0A96D] hover:bg-[#E0A96D]/10 font-semibold text-sm sm:text-base transition-colors flex items-center justify-center gap-2"
@@ -81,18 +82,18 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Col 1: Brand & Philosophy */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#B76E79] to-[#E0A96D] p-0.5">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#B76E79] to-[#E0A96D] p-0.5 shadow-md">
                 <div className="w-full h-full rounded-full bg-[#121011] flex items-center justify-center">
                   <span className="font-serif text-lg font-bold text-[#E0A96D]">KM</span>
                 </div>
               </div>
               <div>
-                <h4 className="font-serif text-xl font-bold text-white">{info.name}</h4>
+                <h4 className="font-serif text-xl font-bold text-white">{info.name || "Khushbu's Makeover"}</h4>
                 <p className="text-[10px] tracking-widest text-[#E0A96D] uppercase">{info.tagline || 'Luxury Salon & Bridal Studio'}</p>
               </div>
             </div>
             <p className="text-stone-400 text-xs sm:text-sm leading-relaxed">
-              {info.about?.mission || "India's premier luxury salon and celebrity bridal destination. Perfecting bridal artistry, HD glow, hair restoration, and dermatological aesthetic rituals for over 15 years."}
+              {info.about?.mission || "Uttar Pradesh's premier luxury salon and celebrity bridal destination. Perfecting bridal artistry, HD glow, hair restoration, and aesthetic rituals."}
             </p>
             <div className="flex items-center gap-3 pt-2">
               {info.socials?.instagram && (
@@ -139,7 +140,7 @@ export const Footer: React.FC<FooterProps> = ({
             <ul className="space-y-2.5 text-xs sm:text-sm text-stone-400">
               <li>
                 <button onClick={() => { setCurrentPage('about'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="hover:text-[#E0A96D] transition-colors">
-                  Our Story & {info.founder || 'Khushboo Sharma'}
+                  Our Story & {info.founder || "Khushbu's Makeover"}
                 </button>
               </li>
               <li>
@@ -175,7 +176,7 @@ export const Footer: React.FC<FooterProps> = ({
             </ul>
           </div>
 
-          {/* Col 3: Contact & Visiting Hours */}
+          {/* Col 3: Contact & Visiting Hours (📍 Exact Address Updated) */}
           <div>
             <h5 className="font-serif text-base font-semibold text-white tracking-wide mb-4 border-l-2 border-[#E0A96D] pl-2.5">
               Contact & Hours
@@ -183,11 +184,11 @@ export const Footer: React.FC<FooterProps> = ({
             <div className="space-y-3 text-xs sm:text-sm text-stone-400">
               <div className="flex items-start gap-2.5">
                 <MapPin className="w-4 h-4 text-[#E0A96D] shrink-0 mt-0.5" />
-                <span>{addressText}</span>
+                <span className="leading-relaxed text-stone-300 font-medium">{addressText}</span>
               </div>
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-[#E0A96D] shrink-0" />
-                <a href={`tel:${info.phone.replace(/\s+/g, '')}`} className="hover:text-white transition-colors">{info.phone}</a>
+                <a href={`tel:${info.phone?.replace(/\s+/g, '') || '919876543210'}`} className="hover:text-white transition-colors">{info.phone || '+91 98765 43210'}</a>
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-[#E0A96D] shrink-0" />
@@ -244,7 +245,7 @@ export const Footer: React.FC<FooterProps> = ({
 
         {/* Bottom Credits & Legal */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500 gap-4">
-          <p>© {new Date().getFullYear()} {info.name}. All Rights Reserved. Master Bridal Studio.</p>
+          <p>© {new Date().getFullYear()} {info.name || "Khushbu's Makeover"}. All Rights Reserved. Master Bridal Studio.</p>
           <div className="flex items-center gap-6">
             <button onClick={onOpenPrivacy} className="hover:text-stone-300 transition-colors">Privacy Policy</button>
             <span>•</span>

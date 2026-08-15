@@ -12,47 +12,67 @@ interface AddServiceModalProps {
   onServiceAdded: (newService: Service) => void;
 }
 
-// Curated luxury preset photos for quick one-tap selection
+// Curated studio photos matching all 14 salon services
 const PRESET_MAKEUP_PHOTOS = [
   {
-    title: 'Royal HD Bridal Look',
-    url: 'https://images.unsplash.com/photo-1596704017254-9b121068fb31?auto=format&fit=crop&w=1000&q=80',
-    category: 'bridal'
-  },
-  {
-    title: 'Airbrush Glow Bride',
-    url: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1000&q=80',
-    category: 'bridal'
-  },
-  {
-    title: 'Reception Velvet Glam',
-    url: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1000&q=80',
-    category: 'hd-makeup'
-  },
-  {
-    title: 'Cocktail Smoky Eye',
-    url: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1000&q=80',
-    category: 'hd-makeup'
-  },
-  {
-    title: 'French Balayage & Blowdry',
+    title: 'Hair Cut & Styling',
     url: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&w=1000&q=80',
     category: 'hair'
   },
   {
-    title: 'Hydra Glass Skin Facial',
+    title: 'Hair Spa & Treatment',
+    url: 'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?auto=format&fit=crop&w=1000&q=80',
+    category: 'hair'
+  },
+  {
+    title: 'Hair Colour & Balayage',
+    url: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=1000&q=80',
+    category: 'hair'
+  },
+  {
+    title: 'Hydra Facial Glow',
     url: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1000&q=80',
     category: 'skin'
   },
   {
-    title: 'Bridal 3D Acrylic Nails',
+    title: 'Customized Facial',
+    url: 'https://images.unsplash.com/photo-1512290900672-1f02a0a0e363?auto=format&fit=crop&w=1000&q=80',
+    category: 'skin'
+  },
+  {
+    title: 'Bleach & D-Tan Clean',
+    url: 'https://images.unsplash.com/photo-1519735777090-ec97162dc266?auto=format&fit=crop&w=1000&q=80',
+    category: 'skin'
+  },
+  {
+    title: 'Royal Bridal Makeup',
+    url: 'https://images.unsplash.com/photo-1596704017254-9b121068fb31?auto=format&fit=crop&w=1000&q=80',
+    category: 'bridal'
+  },
+  {
+    title: 'Party & HD Glam',
+    url: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1000&q=80',
+    category: 'hd-makeup'
+  },
+  {
+    title: 'Manicure & Pedicure',
+    url: 'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=1000&q=80',
+    category: 'nails'
+  },
+  {
+    title: 'Nail Art Studio',
     url: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1000&q=80',
     category: 'nails'
   },
   {
-    title: 'Royal Bridal Mehendi Art',
-    url: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1000&q=80',
+    title: 'Kaveri Mehendi Art',
+    url: 'https://images.unsplash.com/photo-1590439471364-192aa70c0b53?auto=format&fit=crop&w=1000&q=80',
     category: 'mehendi'
+  },
+  {
+    title: 'Ear Lobe & Essentials',
+    url: 'https://images.unsplash.com/photo-1630019852942-f89202989a59?auto=format&fit=crop&w=1000&q=80',
+    category: 'skin'
   }
 ];
 
@@ -62,18 +82,19 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
   onServiceAdded
 }) => {
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<ServiceCategory>('bridal');
-  const [price, setPrice] = useState<number | ''>(14999);
-  const [originalPrice, setOriginalPrice] = useState<number | ''>(19999);
-  const [duration, setDuration] = useState('120 mins');
+  const [category, setCategory] = useState<ServiceCategory>('hair');
+  const [price, setPrice] = useState<number | ''>(2499);
+  const [originalPrice, setOriginalPrice] = useState<number | ''>(3500);
+  const [duration, setDuration] = useState('60 mins');
   const [description, setDescription] = useState('');
   const [photoUrl, setPhotoUrl] = useState(PRESET_MAKEUP_PHOTOS[0].url);
   const [photoMode, setPhotoMode] = useState<'upload' | 'preset' | 'url'>('preset');
-  const [benefitsStr, setBenefitsStr] = useState('HD Waterproof Formula, 24-hr Longevity, Complimentary Lashes, Jewelry & Dupatta Draping');
-  const [productsStr, setProductsStr] = useState('Charlotte Tilbury, Dior Backstage, MAC, Huda Beauty');
-  const [tag, setTag] = useState('Trending Look');
+  const [benefitsStr, setBenefitsStr] = useState('Professional Treatment, Premium Products, Expert Consultation, Instant Glow');
+  const [productsStr, setProductsStr] = useState("L'Oréal Professionnel, Kérastase, O3+, MAC, Huda Beauty");
+  const [tag, setTag] = useState('Popular');
   const [isPopular, setIsPopular] = useState(true);
   const [isFeatured, setIsFeatured] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // File upload state
   const [uploadedFileName, setUploadedFileName] = useState<string>('');
@@ -100,10 +121,10 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim()) {
-      alert('Please enter a service or makeup title.');
+      alert('Please enter a service title.');
       return;
     }
     if (price === '' || Number(price) < 0) {
@@ -111,48 +132,80 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
       return;
     }
 
-    const benefitsArray = benefitsStr
-      ? benefitsStr.split(',').map(b => b.trim()).filter(Boolean)
-      : ['Medical Grade Hygiene', 'Top Global Brands', 'Expert Consultation'];
+    setIsSubmitting(true);
 
-    const productsArray = productsStr
-      ? productsStr.split(',').map(p => p.trim()).filter(Boolean)
-      : ['Charlotte Tilbury', 'Dior', 'Huda Beauty', 'MAC'];
+    try {
+      const benefitsArray = benefitsStr
+        ? benefitsStr.split(',').map(b => b.trim()).filter(Boolean)
+        : ['Medical Grade Hygiene', 'Top Global Brands', 'Expert Consultation'];
 
-    const categoryLabels: Record<ServiceCategory, string> = {
-      'bridal': 'ROYAL BRIDAL',
-      'hd-makeup': 'HD MAKEUP',
-      'hair': 'HAIR & SPA',
-      'skin': 'SKIN & FACIALS',
-      'nails': 'NAILS & LASHES',
-      'mehendi': 'MEHENDI ART',
-      'packages': 'VIP PACKAGE'
-    };
+      const productsArray = productsStr
+        ? productsStr.split(',').map(p => p.trim()).filter(Boolean)
+        : ["L'Oréal Professionnel", 'Kérastase', 'O3+', 'MAC'];
 
-    const newService = salonService.addService({
-      title: title.trim(),
-      category: category,
-      categoryLabel: categoryLabels[category] || category.toUpperCase(),
-      description: description.trim() || 'Custom signature luxury beauty experience crafted with international premium makeup brands.',
-      duration: duration.trim() || '90 mins',
-      price: Number(price),
-      originalPrice: originalPrice !== '' ? Number(originalPrice) : undefined,
-      image: photoUrl || PRESET_MAKEUP_PHOTOS[0].url,
-      benefits: benefitsArray,
-      productsUsed: productsArray,
-      tag: tag.trim() || undefined,
-      isPopular: Boolean(isPopular),
-      isFeatured: Boolean(isFeatured)
-    });
+      const categoryLabels: Record<ServiceCategory, string> = {
+        'bridal': 'Bridal Artistry',
+        'hd-makeup': 'HD Makeup',
+        'hair': 'Hair Care',
+        'skin': 'Skin & Aesthetics',
+        'nails': 'Nail Art Studio',
+        'mehendi': 'Mehendi Studio',
+        'packages': 'VIP Packages'
+      };
 
-    onServiceAdded(newService);
-    onClose();
+      const generatedId = title.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Date.now();
 
-    // Reset Form
-    setTitle('');
-    setDescription('');
-    setTag('');
-    setUploadedFileName('');
+      const servicePayload = {
+        id: generatedId,
+        title: title.trim(),
+        category: category,
+        categoryLabel: categoryLabels[category] || 'Salon Service',
+        description: description.trim() || `${title.trim()} performed by certified luxury salon specialists.`,
+        longDescription: description.trim() || `${title.trim()} performed by certified luxury salon specialists using top international brands for superior results.`,
+        duration: duration.trim() || '60 mins',
+        price: Number(price),
+        originalPrice: originalPrice !== '' ? Number(originalPrice) : Math.round(Number(price) * 1.3),
+        image: photoUrl || PRESET_MAKEUP_PHOTOS[0].url,
+        benefits: benefitsArray,
+        productsUsed: productsArray,
+        tag: tag.trim() || undefined,
+        isPopular: Boolean(isPopular),
+        isFeatured: Boolean(isFeatured)
+      };
+
+      // Handle async or sync addService safely
+      let createdService: Service = servicePayload as Service;
+      if (salonService && typeof salonService.addService === 'function') {
+        const res = await salonService.addService(servicePayload as any);
+        if (res && res.id) {
+          createdService = res;
+        }
+      }
+
+      // Sync to localStorage
+      try {
+        const storedServices = JSON.parse(localStorage.getItem('km_services') || '[]');
+        const updatedServices = [createdService, ...storedServices.filter((s: any) => s.id !== createdService.id)];
+        localStorage.setItem('km_services', JSON.stringify(updatedServices));
+        window.dispatchEvent(new Event('storage'));
+      } catch (err) {
+        console.warn('LocalStorage save warning:', err);
+      }
+
+      onServiceAdded(createdService);
+      onClose();
+
+      // Reset Form
+      setTitle('');
+      setDescription('');
+      setTag('');
+      setUploadedFileName('');
+    } catch (error) {
+      console.error('Error adding service:', error);
+      alert('Service add karte waqt error aaya. Please dobara try karein.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -167,17 +220,17 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
               Service & Makeup Creator
             </div>
             <h3 className="font-serif text-xl sm:text-2xl font-bold tracking-tight">
-              Add New Makeup / Salon Service
+              Add New Salon Service
             </h3>
             <p className="text-xs text-stone-300">
-              Naya makeup add karein, apni custom price set karein aur profile photo upload karein.
+              Nayi service add karein, apni price set karein aur photo choose karein.
             </p>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-stone-300 hover:text-white flex items-center justify-center transition-colors text-sm font-bold"
+            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-stone-300 hover:text-white flex items-center justify-center transition-colors text-sm font-bold cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -186,7 +239,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
         {/* Modal Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
           
-          {/* 1. MAKEUP TITLE & CATEGORY */}
+          {/* 1. BASIC INFORMATION */}
           <div className="space-y-4">
             <h4 className="font-serif text-sm font-bold text-stone-900 dark:text-white flex items-center gap-2 border-b border-stone-200 dark:border-stone-800 pb-2">
               <Sparkles className="w-4 h-4 text-[#8C5E35] dark:text-[#E0A96D]" />
@@ -195,12 +248,12 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
 
             <div>
               <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
-                Makeup / Service Title *
+                Service / Makeup Title *
               </label>
               <input
                 type="text"
                 required
-                placeholder="e.g. Royal Airbrush Bridal Look, Cocktail Glam, 3D Silk Lashes"
+                placeholder="e.g. Hair Cut & Styling, Hydra Facial, Kaveri Mehendi"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 className="w-full px-4 py-2.5 text-xs sm:text-sm rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:border-[#E0A96D] focus:ring-1 focus:ring-[#E0A96D]"
@@ -217,13 +270,13 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
                   onChange={(e) => setCategory(e.target.value as ServiceCategory)}
                   className="w-full px-4 py-2.5 text-xs sm:text-sm rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:border-[#E0A96D]"
                 >
-                  <option value="bridal">👑 Royal Bridal Makeup</option>
-                  <option value="hd-makeup">✨ HD Makeup & Reception</option>
-                  <option value="hair">💇‍♀️ Hair Styling & Keratin Spa</option>
-                  <option value="skin">🌸 Skin Care & Facials</option>
-                  <option value="nails">💅 Nails & Lashes</option>
-                  <option value="mehendi">🌿 Mehendi Art</option>
-                  <option value="packages">💎 VIP Bridal Packages</option>
+                  <option value="hair">💇‍♀️ Hair (Cut, Spa, Color)</option>
+                  <option value="skin">🌸 Skin (Facial, D-Tan, Waxing, Piercing)</option>
+                  <option value="bridal">👑 Bridal Makeup</option>
+                  <option value="hd-makeup">✨ HD Party Makeup</option>
+                  <option value="nails">💅 Nails & Pedicure</option>
+                  <option value="mehendi">🌿 Mehendi (Kaveri)</option>
+                  <option value="packages">💎 VIP Packages</option>
                 </select>
               </div>
 
@@ -235,7 +288,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
                   <Clock className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
                   <input
                     type="text"
-                    placeholder="e.g. 120 mins / 2.5 hours"
+                    placeholder="e.g. 45 mins / 60 mins / 2 hours"
                     value={duration}
                     onChange={(e) => setDuration(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:border-[#E0A96D]"
@@ -245,7 +298,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
             </div>
           </div>
 
-          {/* 2. PRICING CONFIGURATION (PRICE ADD KAREIN) */}
+          {/* 2. PRICING CONFIGURATION */}
           <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#FAF0E6] to-[#F5E6D3]/60 dark:from-[#241F20] dark:to-[#2B2325] border border-[#E0A96D]/40 space-y-3 shadow-sm">
             <div className="flex items-center justify-between">
               <h4 className="font-serif text-sm font-bold text-stone-900 dark:text-white flex items-center gap-2">
@@ -254,7 +307,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
               </h4>
               {originalPrice && price && Number(originalPrice) > Number(price) && (
                 <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/30">
-                  {Math.round(((Number(originalPrice) - Number(price)) / Number(originalPrice)) * 100)}% Discount Badge
+                  {Math.round(((Number(originalPrice) - Number(price)) / Number(originalPrice)) * 100)}% Discount
                 </span>
               )}
             </div>
@@ -262,7 +315,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-semibold text-stone-800 dark:text-stone-200 mb-1">
-                  Active Price (₹) * <span className="text-[11px] font-normal text-stone-500">(Final booking amount)</span>
+                  Active Price (₹) * <span className="text-[11px] font-normal text-stone-500">(Final Amount)</span>
                 </label>
                 <div className="relative">
                   <span className="absolute left-3.5 top-2.5 font-serif font-bold text-stone-500">₹</span>
@@ -270,8 +323,8 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
                     type="number"
                     required
                     min={0}
-                    step={100}
-                    placeholder="14999"
+                    step={50}
+                    placeholder="2499"
                     value={price}
                     onChange={(e) => setPrice(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full pl-8 pr-4 py-2.5 text-sm font-bold font-serif rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:border-[#E0A96D] focus:ring-1 focus:ring-[#E0A96D]"
@@ -281,15 +334,15 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
 
               <div>
                 <label className="block text-xs font-semibold text-stone-800 dark:text-stone-200 mb-1">
-                  Original / Strikethrough Price (₹) <span className="text-[11px] font-normal text-stone-500">(Optional)</span>
+                  Original / MRP Price (₹) <span className="text-[11px] font-normal text-stone-500">(Strikethrough)</span>
                 </label>
                 <div className="relative">
                   <span className="absolute left-3.5 top-2.5 font-serif font-bold text-stone-400">₹</span>
                   <input
                     type="number"
                     min={0}
-                    step={100}
-                    placeholder="19999"
+                    step={50}
+                    placeholder="3500"
                     value={originalPrice}
                     onChange={(e) => setOriginalPrice(e.target.value === '' ? '' : Number(e.target.value))}
                     className="w-full pl-8 pr-4 py-2.5 text-sm font-serif rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 focus:outline-none focus:border-[#E0A96D]"
@@ -299,18 +352,18 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
             </div>
           </div>
 
-          {/* 3. PROFILE PHOTO / MAKEUP IMAGE UPLOAD */}
+          {/* 3. PHOTO UPLOAD & PRESETS */}
           <div className="space-y-4">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-stone-800 pb-2">
               <h4 className="font-serif text-sm font-bold text-stone-900 dark:text-white flex items-center gap-2">
                 <Camera className="w-4 h-4 text-[#8C5E35] dark:text-[#E0A96D]" />
-                3. Makeup Profile Photo (फोटो लगाएं) *
+                3. Service Photo (फोटो लगाएं) *
               </h4>
               <div className="flex items-center gap-1 text-[11px]">
                 <button
                   type="button"
                   onClick={() => setPhotoMode('preset')}
-                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
                     photoMode === 'preset'
                       ? 'bg-[#E0A96D] text-stone-950'
                       : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300'
@@ -321,7 +374,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setPhotoMode('upload')}
-                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
                     photoMode === 'upload'
                       ? 'bg-[#E0A96D] text-stone-950'
                       : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300'
@@ -332,7 +385,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setPhotoMode('url')}
-                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors ${
+                  className={`px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer ${
                     photoMode === 'url'
                       ? 'bg-[#E0A96D] text-stone-950'
                       : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300'
@@ -343,16 +396,15 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
               </div>
             </div>
 
-            {/* Photo Preview & Selection Container */}
+            {/* Photo Selection Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
-              {/* Image Preview Box */}
               <div className="sm:col-span-4 flex flex-col items-center">
-                <div className="relative w-full aspect-square rounded-2xl overflow-hidden border-2 border-[#E0A96D]/40 bg-stone-100 dark:bg-stone-800 shadow-md group">
+                <div className="relative w-full aspect-square rounded-2xl overflow-hidden border-2 border-[#E0A96D]/40 bg-stone-100 dark:bg-stone-800 shadow-md">
                   {photoUrl ? (
                     <img
                       src={photoUrl}
                       alt="Service preview"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover"
                     />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-stone-400 p-4 text-center">
@@ -360,15 +412,13 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
                       <span className="text-[11px]">No photo chosen</span>
                     </div>
                   )}
-                  <span className="absolute bottom-2 left-2 right-2 px-2 py-1 rounded bg-black/60 backdrop-blur-sm text-white text-[10px] font-medium text-center truncate">
-                    Live Card Preview
+                  <span className="absolute bottom-2 left-2 right-2 px-2 py-1 rounded bg-black/70 backdrop-blur-sm text-white text-[10px] font-medium text-center truncate">
+                    Preview
                   </span>
                 </div>
               </div>
 
-              {/* Photo Input Controls */}
               <div className="sm:col-span-8 space-y-3">
-                {/* Mode 1: Device File Upload */}
                 {photoMode === 'upload' && (
                   <div className="p-4 rounded-2xl border-2 border-dashed border-[#E0A96D]/40 bg-stone-50 dark:bg-stone-900/60 text-center space-y-2">
                     <input
@@ -385,7 +435,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
-                        className="px-4 py-2 rounded-xl bg-[#E0A96D] text-stone-950 font-bold text-xs hover:bg-[#C58F5E] transition-colors shadow-sm"
+                        className="px-4 py-2 rounded-xl bg-[#E0A96D] text-stone-950 font-bold text-xs hover:bg-[#C58F5E] transition-colors shadow-sm cursor-pointer"
                       >
                         Choose Photo from Device
                       </button>
@@ -396,13 +446,12 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
                   </div>
                 )}
 
-                {/* Mode 2: Quick Presets */}
                 {photoMode === 'preset' && (
                   <div>
                     <label className="block text-[11px] text-stone-500 mb-1.5">
-                      Select a high-resolution studio photo:
+                      Choose matching photo:
                     </label>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div className="grid grid-cols-4 gap-2 max-h-36 overflow-y-auto p-1">
                       {PRESET_MAKEUP_PHOTOS.map((preset, idx) => {
                         const isSelected = photoUrl === preset.url;
                         return (
@@ -410,7 +459,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
                             key={idx}
                             type="button"
                             onClick={() => setPhotoUrl(preset.url)}
-                            className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all group ${
+                            className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
                               isSelected ? 'border-[#E0A96D] ring-2 ring-[#E0A96D]/40 scale-105' : 'border-stone-200 dark:border-stone-700 opacity-70 hover:opacity-100'
                             }`}
                           >
@@ -431,7 +480,6 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
                   </div>
                 )}
 
-                {/* Mode 3: Custom Web URL */}
                 {photoMode === 'url' && (
                   <div>
                     <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">
@@ -450,7 +498,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
             </div>
           </div>
 
-          {/* 4. DESCRIPTION & DETAILS */}
+          {/* 4. DESCRIPTION & HIGHLIGHTS */}
           <div className="space-y-4">
             <h4 className="font-serif text-sm font-bold text-stone-900 dark:text-white flex items-center gap-2 border-b border-stone-200 dark:border-stone-800 pb-2">
               <Tag className="w-4 h-4 text-[#8C5E35] dark:text-[#E0A96D]" />
@@ -459,11 +507,11 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
 
             <div>
               <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">
-                Makeup & Service Description
+                Service Description
               </label>
               <textarea
                 rows={2}
-                placeholder="Describe what makes this makeup ritual extraordinary (e.g. customized skin prep, flawless airbrush finish, waterproof tearproof longevity)..."
+                placeholder="Describe what makes this service special..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 className="w-full px-4 py-2.5 text-xs sm:text-sm rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:border-[#E0A96D]"
@@ -477,7 +525,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  placeholder="Airbrush, 24hr wear, Free trial"
+                  placeholder="Deep Cleansing, Instant Glow, 100% Organic"
                   value={benefitsStr}
                   onChange={(e) => setBenefitsStr(e.target.value)}
                   className="w-full px-3.5 py-2 text-xs rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:border-[#E0A96D]"
@@ -486,11 +534,11 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
 
               <div>
                 <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">
-                  Cosmetics & Brands Used
+                  Brands / Products Used
                 </label>
                 <input
                   type="text"
-                  placeholder="Charlotte Tilbury, Dior, MAC, Huda Beauty"
+                  placeholder="L'Oréal, Kérastase, O3+, MAC"
                   value={productsStr}
                   onChange={(e) => setProductsStr(e.target.value)}
                   className="w-full px-3.5 py-2 text-xs rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:border-[#E0A96D]"
@@ -505,7 +553,7 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Signature Bridal, Best Seller, New 2026"
+                  placeholder="e.g. Bestseller, Trending, New 2026"
                   value={tag}
                   onChange={(e) => setTag(e.target.value)}
                   className="w-full px-3.5 py-2 text-xs rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:border-[#E0A96D]"
@@ -541,16 +589,17 @@ export const AddServiceModal: React.FC<AddServiceModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 text-xs font-semibold transition-colors"
+              className="px-5 py-2.5 rounded-xl text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 text-xs font-semibold transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#B76E79] via-[#C58F5E] to-[#E0A96D] text-white text-xs sm:text-sm font-bold shadow-lg shadow-[#E0A96D]/25 hover:opacity-95 active:scale-95 transition-all flex items-center gap-2"
+              disabled={isSubmitting}
+              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-[#B76E79] via-[#C58F5E] to-[#E0A96D] text-white text-xs sm:text-sm font-bold shadow-lg shadow-[#E0A96D]/25 hover:opacity-95 active:scale-95 disabled:opacity-50 transition-all flex items-center gap-2 cursor-pointer"
             >
               <Check className="w-4 h-4" />
-              <span>Save & Publish Makeup Service</span>
+              <span>{isSubmitting ? 'Saving...' : 'Save & Publish Service'}</span>
             </button>
           </div>
         </form>

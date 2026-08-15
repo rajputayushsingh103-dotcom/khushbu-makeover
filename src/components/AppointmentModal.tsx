@@ -32,7 +32,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const [serviceId, setServiceId] = useState<string>('');
   const [date, setDate] = useState<string>('');
   const [timeSlot, setTimeSlot] = useState<string>('11:00 AM - 1:00 PM');
-  const [stylist, setStylist] = useState<string>(`${info.founder || 'Khushboo Sharma'} (Celebrity Master Artist)`);
+  const [stylist, setStylist] = useState<string>(`${info.founder || "Khushbu's Makeover"} (Celebrity Master Artist)`);
   const [name, setName] = useState<string>('');
   const [phone, setPhone] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -42,33 +42,43 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const [appliedDiscount, setAppliedDiscount] = useState<{ code: string; amount: number } | null>(null);
   const [couponError, setCouponError] = useState<string>('');
 
-  // Payment Option: advance deposit token % (default 10%) vs full vs pay at salon
+  // Payment Option
   const [paymentOption, setPaymentOption] = useState<'token_10_percent' | 'full_payment' | 'pay_at_salon'>('token_10_percent');
   const [paymentRef, setPaymentRef] = useState<string>('');
   const [isCopiedUPI, setIsCopiedUPI] = useState<boolean>(false);
-  const [hasConfirmedPayment, setHasConfirmedPayment] = useState<boolean>(true);
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [confirmedBooking, setConfirmedBooking] = useState<Appointment | null>(null);
 
-  const SALON_UPI_ID = info.upiId || info.payment?.upiId || 'khushboomakeover@okaxis';
+  const SALON_UPI_ID = info.upiId || info.payment?.upiId || '9598538006@okaxis';
   const rawDepositPercent = info.depositPercentage || info.payment?.tokenPercentage || 10;
   const depositPercentRate = rawDepositPercent / 100;
   const depositPercentLabel = `${rawDepositPercent}%`;
 
-  // Set initial service
+  // 🌟 Auto-Fill Logged-in User Info & Initial Service
   useEffect(() => {
+    try {
+      const savedUserStr = localStorage.getItem('km_user');
+      if (savedUserStr) {
+        const user = JSON.parse(savedUserStr);
+        if (user.name && !name) setName(user.name);
+        if (user.phone && !phone) setPhone(user.phone);
+        if (user.email && !email) setEmail(user.email);
+      }
+    } catch (e) {
+      console.warn("User autofill error", e);
+    }
+
     if (selectedService) {
       setServiceId(selectedService.id);
     } else if (services.length > 0 && !serviceId) {
       setServiceId(services[0].id);
     }
 
-    // Default date to tomorrow
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     setDate(tomorrow.toISOString().split('T')[0]);
-  }, [selectedService, services]);
+  }, [selectedService, services, isOpen]);
 
   if (!isOpen) return null;
 
@@ -83,7 +93,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   ];
 
   const stylists = [
-    'Khushboo Sharma (Founder & Celebrity Artist)',
+    "Khushbu's Makeover (Founder & Master Artist)",
     'Priya Mehra (Senior Hair & Color Director)',
     'Aisha Khan (Lead Clinical Aesthetician)',
     'Riya Sen (Master Nail & Lash Stylist)',
@@ -131,9 +141,8 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     : 0;
 
   // Dynamic UPI Intent URI
-  const upiIntentUri = `upi://pay?pa=${SALON_UPI_ID}&pn=${encodeURIComponent(info.name || 'Khushboo Makeover Studio')}&am=${payableNow}&cu=INR&tn=${encodeURIComponent(`Deposit Booking ${currentService?.title || 'Makeup'}`)}`;
+  const upiIntentUri = `upi://pay?pa=${SALON_UPI_ID}&pn=${encodeURIComponent(info.name || "Khushbu's Makeover")}&am=${payableNow}&cu=INR&tn=${encodeURIComponent(`Booking ${currentService?.title || 'Service'}`)}`;
   
-  // Real dynamic QR Code URL via QR server or custom uploaded QR
   const customQrUrl = info.qrCodeUrl || info.payment?.qrCodeUrl;
   const qrCodeImageUrl = customQrUrl && customQrUrl.startsWith('http') && paymentOption !== 'token_10_percent'
     ? customQrUrl
@@ -172,6 +181,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     setAppliedDiscount({ code: offer.code, amount: discount });
   };
 
+  // 🌸 SUBMIT & PERMANENTLY SAVE TO USER PROFILE
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !phone.trim() || !date || !currentService) {
@@ -181,6 +191,12 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     setIsSubmitting(true);
 
     try {
+      let loggedInUserId = '';
+      try {
+        const u = JSON.parse(localStorage.getItem('km_user') || '{}');
+        if (u.id) loggedInUserId = u.id;
+      } catch (err) {}
+
       const newApt = await salonService.createAppointment({
         name,
         phone,
@@ -197,17 +213,31 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
         advancePaid: payableNow,
         remainingDue,
         paymentRef: paymentRef.trim() || undefined,
-        message
+        message,
+        userId: loggedInUserId || undefined
       });
 
-      setConfirmedBooking(newApt);
-      onAppointmentCreated(newApt);
+      // 💾 Save Booking directly into Profile LocalStorage
+      try {
+        const existingBookings = JSON.parse(localStorage.getItem('km_bookings') || '[]');
+        const updatedBookings = [newApt, ...existingBookings.filter((b: any) => b.id !== newApt.id)];
+        localStorage.setItem('km_bookings', JSON.stringify(updatedBookings));
+        localStorage.setItem('salon_appointments', JSON.stringify(updatedBookings));
 
-      // Trigger Confetti Celebration
+        window.dispatchEvent(new Event('storage'));
+        window.dispatchEvent(new CustomEvent('bookingUpdated', { detail: newApt }));
+      } catch (saveErr) {
+        console.error("Profile save error:", saveErr);
+      }
+
+      // Set confirmed booking to show receipt (modal won't close)
+      setConfirmedBooking(newApt);
+
+      // Trigger Confetti
       try {
         confetti({
-          particleCount: 85,
-          spread: 75,
+          particleCount: 90,
+          spread: 80,
           origin: { y: 0.6 },
           colors: ['#E0A96D', '#B76E79', '#F9D5A7', '#D4AF37', '#ffffff']
         });
@@ -219,32 +249,51 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     }
   };
 
-  const generateWhatsAppUrl = () => {
+  // 📱 WHATSAPP RECEIPT GENERATOR & DIRECT OPEN
+  const getWhatsAppUrl = () => {
     if (!confirmedBooking) return '';
     const paymentStatusText = confirmedBooking.paymentOption === 'token_10_percent'
-      ? `*Pre-Booking Token Paid (${depositPercentLabel}):* ₹${(confirmedBooking.advancePaid || 0).toLocaleString()}\n*Remaining Balance Due at Studio:* ₹${(confirmedBooking.remainingDue || 0).toLocaleString()}`
+      ? `*Pre-Booking Token Paid (${depositPercentLabel}):* ₹${(confirmedBooking.advancePaid || 0).toLocaleString()}\n*Remaining Balance (Pay at Studio):* ₹${(confirmedBooking.remainingDue || 0).toLocaleString()}`
       : confirmedBooking.paymentOption === 'full_payment'
-      ? `*Payment Status:* Full Amount Paid (₹${confirmedBooking.totalPrice.toLocaleString()})`
-      : `*Payment:* Pay at Studio (₹${confirmedBooking.totalPrice.toLocaleString()})`;
+      ? `*Payment Status:* Full Amount Paid Online (₹${confirmedBooking.totalPrice.toLocaleString()})`
+      : `*Payment Status:* Pay at Studio (₹${confirmedBooking.totalPrice.toLocaleString()})`;
 
     const text = encodeURIComponent(
-      `✨ *Appointment Confirmation - ${info.name || 'Khushboo Makeover'}* ✨\n\n` +
-      `*Booking ID:* ${confirmedBooking.bookingCode}\n` +
+      `✨ *Appointment Confirmation - ${info.name || "Khushbu's Makeover"}* ✨\n\n` +
+      `*Booking Code:* ${confirmedBooking.bookingCode}\n` +
       `*Client Name:* ${confirmedBooking.name}\n` +
-      `*Phone:* ${confirmedBooking.phone}\n` +
+      `*Mobile:* ${confirmedBooking.phone}\n` +
       `*Service:* ${confirmedBooking.serviceName}\n` +
       `*Stylist:* ${confirmedBooking.stylist}\n` +
       `*Date:* ${confirmedBooking.date}\n` +
       `*Time Slot:* ${confirmedBooking.timeSlot}\n` +
-      `*Total Package Price:* ₹${confirmedBooking.totalPrice.toLocaleString()}\n` +
+      `*Total Price:* ₹${confirmedBooking.totalPrice.toLocaleString()}\n` +
       `${paymentStatusText}\n` +
-      (confirmedBooking.paymentRef ? `*UPI Transaction Ref:* ${confirmedBooking.paymentRef}\n` : '') +
-      (confirmedBooking.message ? `*Notes:* ${confirmedBooking.message}\n` : '') +
-      `\nStudio Address: ${typeof info.address === 'string' ? info.address : [info.address?.street, info.address?.landmark, info.address?.city].filter(Boolean).join(', ')}\n` +
-      `My appointment date is reserved! Thank you.`
+      (confirmedBooking.paymentRef ? `*UPI Ref:* ${confirmedBooking.paymentRef}\n` : '') +
+      (confirmedBooking.addons && confirmedBooking.addons.length > 0 ? `*Add-ons:* ${confirmedBooking.addons.join(', ')}\n` : '') +
+      `\n📍 *Studio Address:* Near Dolphin Public School, Village Chheetpur, Dileeppur, Uttar Pradesh 230127\n\n` +
+      `Thank you! My booking is confirmed.`
     );
-    const waNumber = (info.whatsapp || '919820012345').replace(/\D/g, '');
+    
+    const waNumber = (info.whatsapp || '919598538006').replace(/\D/g, '');
     return `https://wa.me/${waNumber}?text=${text}`;
+  };
+
+  const handleSendWhatsApp = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const url = getWhatsAppUrl();
+    if (url) {
+      window.open(url, '_blank');
+    }
+  };
+
+  // Close modal manually only when user wants
+  const handleCloseModal = () => {
+    if (confirmedBooking) {
+      onAppointmentCreated(confirmedBooking);
+      setConfirmedBooking(null);
+    }
+    onClose();
   };
 
   return (
@@ -256,8 +305,9 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
         {/* Top Header Banner */}
         <div className="bg-gradient-to-r from-[#1E1B1C] via-[#2A2324] to-[#1E1B1C] p-6 sm:p-7 border-b border-[#E0A96D]/30 relative">
           <button
-            onClick={onClose}
-            className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/10 text-stone-300 hover:text-white hover:bg-white/20 flex items-center justify-center transition-colors"
+            type="button"
+            onClick={handleCloseModal}
+            className="absolute top-5 right-5 w-9 h-9 rounded-full bg-white/10 text-stone-300 hover:text-white hover:bg-white/20 flex items-center justify-center transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -270,16 +320,16 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
             Book Your Beauty Experience
           </h3>
           <p className="text-xs sm:text-sm text-stone-300 mt-1">
-            Personalized pampering with Master Artist Khushboo Sharma & Senior Stylists.
+            Personalized pampering with Master Artist Khushboo & Senior Stylists.
           </p>
         </div>
 
-        {/* Content Body: Form OR Confirmation Receipt */}
+        {/* Content Body */}
         {confirmedBooking ? (
-          /* SUCCESS CONFIRMATION RECEIPT */
+          /* SUCCESS CONFIRMATION RECEIPT - STAYS OPEN UNTIL USER CLOSES */
           <div className="p-6 sm:p-8 space-y-6 text-center animate-in zoom-in-95 duration-300">
-            <div className="w-16 h-16 mx-auto rounded-full bg-[#E0A96D]/20 text-[#E0A96D] flex items-center justify-center border-2 border-[#E0A96D]">
-              <CheckCircle2 className="w-10 h-10 text-[#E0A96D]" />
+            <div className="w-16 h-16 mx-auto rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center border-2 border-emerald-500 shadow-lg shadow-emerald-500/20">
+              <CheckCircle2 className="w-10 h-10 text-emerald-500" />
             </div>
 
             <div>
@@ -290,7 +340,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 We Can't Wait to Glam You Up, {confirmedBooking.name.split(' ')[0]}!
               </h2>
               <p className="text-xs sm:text-sm text-stone-600 dark:text-stone-300 mt-1.5">
-                Your luxury appointment has been registered and scheduled in our salon calendar.
+                Receipt saved! WhatsApp button par click karke details send karein.
               </p>
             </div>
 
@@ -335,7 +385,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 {confirmedBooking.paymentOption === 'token_10_percent' && (
                   <div className="flex justify-between text-xs">
                     <span className="text-stone-600 dark:text-stone-300 font-medium">
-                      Remaining Balance (Pay at Salon):
+                      Remaining Balance (Pay at Studio):
                     </span>
                     <span className="font-serif font-bold text-[#8C5E35] dark:text-[#E0A96D]">
                       ₹{(confirmedBooking.remainingDue || 0).toLocaleString()}
@@ -357,33 +407,37 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
               )}
             </div>
 
-            {/* Notification Actions */}
+            {/* 🌟 1-CLICK WHATSAPP BUTTON (CLICK PAR DIRECT WHATSAPP KHULEGA) */}
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <a
-                href={generateWhatsAppUrl()}
-                target="_blank"
-                rel="noreferrer"
-                className="flex-1 py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25 transition-all"
+              <button
+                type="button"
+                onClick={handleSendWhatsApp}
+                className="flex-1 py-3.5 px-4 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer"
               >
                 <Share2 className="w-4 h-4" />
-                <span>Send WhatsApp Confirmation</span>
-              </a>
+                <span>Send Receipt on WhatsApp</span>
+              </button>
 
               <button
+                type="button"
                 onClick={() => window.print()}
-                className="py-3.5 px-5 rounded-xl border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-semibold flex items-center justify-center gap-2 transition-colors"
+                className="py-3.5 px-5 rounded-xl border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300 text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 <Download className="w-4 h-4" />
                 <span>Print Receipt</span>
               </button>
             </div>
 
-            <button
-              onClick={onClose}
-              className="text-xs text-stone-500 hover:text-stone-900 dark:hover:text-white underline underline-offset-4"
-            >
-              Done & Return to Salon
-            </button>
+            {/* Close / Return Button */}
+            <div>
+              <button
+                type="button"
+                onClick={handleCloseModal}
+                className="px-6 py-2 rounded-xl bg-stone-200 dark:bg-stone-800 hover:bg-stone-300 dark:hover:bg-stone-700 text-xs font-semibold text-stone-800 dark:text-stone-200 transition-colors cursor-pointer"
+              >
+                Done / Close Receipt
+              </button>
+            </div>
           </div>
         ) : (
           /* BOOKING FORM */
@@ -574,7 +628,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                   <button
                     type="button"
                     onClick={handleApplyCoupon}
-                    className="px-4 py-2 bg-stone-900 dark:bg-stone-700 hover:bg-[#E0A96D] hover:text-stone-950 text-white rounded-xl text-xs font-semibold transition-colors"
+                    className="px-4 py-2 bg-stone-900 dark:bg-stone-700 hover:bg-[#E0A96D] hover:text-stone-950 text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer"
                   >
                     Apply
                   </button>
@@ -591,7 +645,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
               </div>
             </div>
 
-            {/* Step 4: PRE-BOOKING (10% ADVANCE TOKEN) & PAYMENT SELECTION */}
+            {/* Step 4: Payment Option */}
             <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#FAF0E6] to-[#F5E6D3]/60 dark:from-[#241F20] dark:to-[#2B2325] border border-[#E0A96D]/40 space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -615,7 +669,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
               {/* Payment Mode Selection Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                {/* 1. 10% Advance Token Option */}
+                {/* 1. 10% Token */}
                 <div
                   onClick={() => setPaymentOption('token_10_percent')}
                   className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all relative flex flex-col justify-between ${
@@ -644,7 +698,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                   </div>
                 </div>
 
-                {/* 2. Full 100% Online Payment */}
+                {/* 2. Full 100% */}
                 <div
                   onClick={() => setPaymentOption('full_payment')}
                   className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all flex flex-col justify-between ${
@@ -695,12 +749,10 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 </div>
               </div>
 
-              {/* Dynamic UPI QR Code & Advance Amount Breakdown (If Token or Full Payment is selected) */}
+              {/* Dynamic UPI QR Code */}
               {paymentOption !== 'pay_at_salon' && (
                 <div className="p-4 rounded-2xl bg-white dark:bg-stone-900 border border-[#E0A96D]/30 space-y-4 animate-in fade-in duration-300">
                   <div className="flex flex-col sm:flex-row items-center gap-5">
-                    
-                    {/* Dynamic QR Code Card */}
                     <div className="flex flex-col items-center bg-white p-3 rounded-2xl border-2 border-[#E0A96D]/40 shadow-md shrink-0">
                       <img
                         src={qrCodeImageUrl}
@@ -713,7 +765,6 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                       </div>
                     </div>
 
-                    {/* Breakdown & UPI Apps */}
                     <div className="space-y-2.5 flex-1 w-full text-left">
                       <div className="space-y-1">
                         <div className="flex justify-between text-xs text-stone-600 dark:text-stone-400">
@@ -743,13 +794,13 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                       {/* UPI ID with 1-Click Copy */}
                       <div className="p-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 flex items-center justify-between">
                         <div>
-                          <span className="text-[9px] uppercase font-bold text-stone-400 block">Salon UPI ID</span>
+                          <span className="text-[9px] uppercase font-bold text-stone-400 block">Studio UPI ID</span>
                           <span className="font-mono text-xs font-bold text-stone-800 dark:text-stone-200">{SALON_UPI_ID}</span>
                         </div>
                         <button
                           type="button"
                           onClick={copyUpiId}
-                          className="px-2.5 py-1 rounded-lg bg-[#E0A96D]/15 hover:bg-[#E0A96D]/30 text-[#8C5E35] dark:text-[#E0A96D] text-xs font-semibold flex items-center gap-1 transition-colors"
+                          className="px-2.5 py-1 rounded-lg bg-[#E0A96D]/15 hover:bg-[#E0A96D]/30 text-[#8C5E35] dark:text-[#E0A96D] text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
                         >
                           {isCopiedUPI ? (
                             <>
@@ -764,42 +815,13 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                           )}
                         </button>
                       </div>
-
-                      {/* UPI App Quick Intent Trigger */}
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-[10px] text-stone-500">Pay with:</span>
-                        <a
-                          href={upiIntentUri}
-                          className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-stone-800 hover:bg-[#E0A96D]/20 text-[10px] font-semibold text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 transition-colors"
-                        >
-                          GPay
-                        </a>
-                        <a
-                          href={upiIntentUri}
-                          className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-stone-800 hover:bg-[#E0A96D]/20 text-[10px] font-semibold text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 transition-colors"
-                        >
-                          PhonePe
-                        </a>
-                        <a
-                          href={upiIntentUri}
-                          className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-stone-800 hover:bg-[#E0A96D]/20 text-[10px] font-semibold text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 transition-colors"
-                        >
-                          Paytm
-                        </a>
-                        <a
-                          href={upiIntentUri}
-                          className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-stone-800 hover:bg-[#E0A96D]/20 text-[10px] font-semibold text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 transition-colors"
-                        >
-                          BHIM UPI
-                        </a>
-                      </div>
                     </div>
                   </div>
 
-                  {/* UTR / Transaction ID Input (Optional) */}
+                  {/* Transaction ID Input */}
                   <div className="pt-2 border-t border-stone-100 dark:border-stone-800">
                     <label className="block text-[11px] font-semibold text-stone-700 dark:text-stone-300 mb-1">
-                      UPI Transaction ID / UTR (Optional / optional reference)
+                      UPI Transaction ID / UTR Number (Optional)
                     </label>
                     <input
                       type="text"
@@ -813,7 +835,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
               )}
             </div>
 
-            {/* Total Calculation & Submit CTA */}
+            {/* Total Calculation & Submit Button */}
             <div className="pt-4 border-t border-stone-200 dark:border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-4">
               <div>
                 <span className="text-[10px] uppercase font-bold tracking-widest text-stone-400">
@@ -834,8 +856,8 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   type="button"
-                  onClick={onClose}
-                  className="w-1/2 sm:w-auto px-5 py-3 rounded-full text-xs font-semibold text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors"
+                  onClick={handleCloseModal}
+                  className="w-1/2 sm:w-auto px-5 py-3 rounded-full text-xs font-semibold text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-800 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -843,7 +865,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                   id="submit-appointment-btn"
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-1/2 sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-[#B76E79] via-[#C58F5E] to-[#E0A96D] text-white font-semibold text-sm shadow-lg shadow-[#E0A96D]/25 hover:shadow-xl hover:scale-105 active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                  className="w-1/2 sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-[#B76E79] via-[#C58F5E] to-[#E0A96D] text-white font-semibold text-sm shadow-lg shadow-[#E0A96D]/25 hover:shadow-xl hover:scale-105 active:scale-95 disabled:opacity-50 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {isSubmitting ? (
                     <span>Reserving...</span>

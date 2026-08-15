@@ -155,7 +155,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ salonInfo }) => 
                     <input
                       type="tel"
                       required
-                      placeholder="e.g. +91 98765 43210"
+                      placeholder="e.g. +91 95985 38006"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       className="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:border-[#E0A96D]"
@@ -239,7 +239,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ salonInfo }) => 
 
         <div className="relative h-72 sm:h-96 w-full bg-stone-900 overflow-hidden">
           <iframe
-            title={`${info.name || 'Khushboo Makeover'} Location Map`}
+            title={`${info.name || 'Khushbu Makeover'} Location Map`}
             src={mapEmbedLink}
             width="100%"
             height="100%"

@@ -18,7 +18,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({
     {
       year: '2011',
       title: 'The Inception & First Studio',
-      description: `Founded by ${info.founder || 'Khushboo Sharma'} after completing international makeup diploma in London, pioneering luxury bridal airbrush techniques in Mumbai.`
+      description: `Founded by ${info.founder || 'Khushboo Singh'} after completing international makeup diploma in London, pioneering luxury bridal airbrush techniques in Mumbai.`
     },
     {
       year: '2015',
