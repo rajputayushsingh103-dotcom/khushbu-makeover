@@ -41,7 +41,7 @@ export const SALON_INFO: SalonInfo = {
     headlineLine2: 'Becomes Royalty',
     subheadline: "Elevate your wedding & celebration glamour with master artist Khushboo. Experience bespoke HD Airbrush makeup, HydraFacial, Kaveri Mehendi, and luxury hair transformations in private VIP suites.",
     backgroundImage: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=2000&q=85',
-    primaryCtaText: 'Reserve VIP Appointment',
+    primaryCtaText: 'Reserve Appointment',
     secondaryCtaText: 'AI Bridal Stylist'
   },
   // About texts

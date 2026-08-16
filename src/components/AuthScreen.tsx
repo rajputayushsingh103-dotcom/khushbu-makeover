@@ -485,7 +485,7 @@ const AuthScreenContent: React.FC<Props> = ({ onLoginSuccess }) => {
                   : 'text-rose-800/70 hover:text-rose-950'
               }`}
             >
-              Join VIP
+              New Register
             </button>
           </div>
 
@@ -568,7 +568,7 @@ const AuthScreenContent: React.FC<Props> = ({ onLoginSuccess }) => {
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : (
                   <>
-                    <span>Register & Join VIP Club</span>
+                    <span>Register </span>
                     <Sparkles className="w-4 h-4" />
                   </>
                 )}

@@ -89,7 +89,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 className="px-7 sm:px-8 py-3.5 sm:py-4 rounded-full bg-gradient-to-r from-[#B76E79] via-[#C58F5E] to-[#E0A96D] text-white font-bold text-sm sm:text-base shadow-xl shadow-[#E0A96D]/25 hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center gap-2.5"
               >
                 <Calendar className="w-4 h-4" />
-                <span>{info.hero?.primaryCtaText || "Reserve VIP Appointment"}</span>
+                <span>{info.hero?.primaryCtaText || "Reserve Appointment"}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 

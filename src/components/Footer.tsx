@@ -229,7 +229,7 @@ export const Footer: React.FC<FooterProps> = ({
                 type="submit"
                 className="w-full py-2.5 rounded-xl bg-[#E0A96D] hover:bg-[#C58F5E] text-stone-950 font-semibold text-xs transition-colors flex items-center justify-center gap-1.5"
               >
-                <span>Join VIP Inner Circle</span>
+                <span>New Register Inner Circle</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </form>

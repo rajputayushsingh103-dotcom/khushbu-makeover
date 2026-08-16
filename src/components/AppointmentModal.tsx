@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   X, Calendar, Clock, Sparkles, CheckCircle2, User, Phone, Mail,
   MessageSquare, ShieldCheck, Tag, ArrowRight, Download, Share2,
-  QrCode, CreditCard, Copy, Check, Lock, Percent, Smartphone, AlertCircle
+  QrCode, CreditCard, Copy, Check, Lock, Percent, Smartphone, AlertCircle, ExternalLink
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Service, Appointment, Offer, SalonInfo } from '../types';
@@ -45,12 +45,15 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   // Payment Option
   const [paymentOption, setPaymentOption] = useState<'token_10_percent' | 'full_payment' | 'pay_at_salon'>('token_10_percent');
   const [paymentRef, setPaymentRef] = useState<string>('');
+  const [utrError, setUtrError] = useState<string>('');
   const [isCopiedUPI, setIsCopiedUPI] = useState<boolean>(false);
 
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [confirmedBooking, setConfirmedBooking] = useState<Appointment | null>(null);
 
+  // UPI Configuration
   const SALON_UPI_ID = info.upiId || info.payment?.upiId || '9598538006@okaxis';
+  const SALON_PAYEE_NAME = info.name || info.payment?.payeeName || "Khushbu Makeover";
   const rawDepositPercent = info.depositPercentage || info.payment?.tokenPercentage || 10;
   const depositPercentRate = rawDepositPercent / 100;
   const depositPercentLabel = `${rawDepositPercent}%`;
@@ -140,13 +143,13 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     ? totalPrice
     : 0;
 
-  // Dynamic UPI Intent URI
-  const upiIntentUri = `upi://pay?pa=${SALON_UPI_ID}&pn=${encodeURIComponent(info.name || "Khushbu's Makeover")}&am=${payableNow}&cu=INR&tn=${encodeURIComponent(`Booking ${currentService?.title || 'Service'}`)}`;
+  // ⚡ NPCI Standard Dynamic UPI URI (Exact Amount + Shop Name Pre-Filled)
+  const cleanPayeeName = encodeURIComponent(SALON_PAYEE_NAME.replace(/[^a-zA-Z0-9 ]/g, '').trim());
+  const cleanTransactionNote = encodeURIComponent(`Booking ${currentService?.title || 'Salon Service'}`);
+  const dynamicUpiIntentUri = `upi://pay?pa=${encodeURIComponent(SALON_UPI_ID.trim())}&pn=${cleanPayeeName}&am=${payableNow}&cu=INR&tn=${cleanTransactionNote}`;
   
-  const customQrUrl = info.qrCodeUrl || info.payment?.qrCodeUrl;
-  const qrCodeImageUrl = customQrUrl && customQrUrl.startsWith('http') && paymentOption !== 'token_10_percent'
-    ? customQrUrl
-    : `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(upiIntentUri)}&margin=6`;
+  // High-Resolution Dynamic QR Image Code
+  const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(dynamicUpiIntentUri)}&margin=8`;
 
   const copyUpiId = () => {
     navigator.clipboard?.writeText(SALON_UPI_ID);
@@ -184,7 +187,15 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   // 🌸 SUBMIT & PERMANENTLY SAVE TO USER PROFILE
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setUtrError('');
+
     if (!name.trim() || !phone.trim() || !date || !currentService) {
+      return;
+    }
+
+    // 🔒 UTR MANDATORY VALIDATION FOR ONLINE PAYMENTS
+    if (paymentOption !== 'pay_at_salon' && !paymentRef.trim()) {
+      setUtrError('Payment confirm karne ke liye 12-digit UTR / UPI Transaction ID enter karna zaroori hai.');
       return;
     }
 
@@ -230,7 +241,6 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
         console.error("Profile save error:", saveErr);
       }
 
-      // Set confirmed booking to show receipt (modal won't close)
       setConfirmedBooking(newApt);
 
       // Trigger Confetti
@@ -269,7 +279,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
       `*Time Slot:* ${confirmedBooking.timeSlot}\n` +
       `*Total Price:* ₹${confirmedBooking.totalPrice.toLocaleString()}\n` +
       `${paymentStatusText}\n` +
-      (confirmedBooking.paymentRef ? `*UPI Ref:* ${confirmedBooking.paymentRef}\n` : '') +
+      (confirmedBooking.paymentRef ? `*UPI / UTR Ref:* ${confirmedBooking.paymentRef}\n` : '') +
       (confirmedBooking.addons && confirmedBooking.addons.length > 0 ? `*Add-ons:* ${confirmedBooking.addons.join(', ')}\n` : '') +
       `\n📍 *Studio Address:* Near Dolphin Public School, Village Chheetpur, Dileeppur, Uttar Pradesh 230127\n\n` +
       `Thank you! My booking is confirmed.`
@@ -326,7 +336,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
         {/* Content Body */}
         {confirmedBooking ? (
-          /* SUCCESS CONFIRMATION RECEIPT - STAYS OPEN UNTIL USER CLOSES */
+          /* SUCCESS CONFIRMATION RECEIPT */
           <div className="p-6 sm:p-8 space-y-6 text-center animate-in zoom-in-95 duration-300">
             <div className="w-16 h-16 mx-auto rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center border-2 border-emerald-500 shadow-lg shadow-emerald-500/20">
               <CheckCircle2 className="w-10 h-10 text-emerald-500" />
@@ -394,7 +404,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 )}
                 {confirmedBooking.paymentRef && (
                   <div className="text-[11px] text-stone-500 pt-1 border-t border-[#E0A96D]/20">
-                    UPI Ref: <span className="font-mono font-semibold">{confirmedBooking.paymentRef}</span>
+                    UPI / UTR Ref: <span className="font-mono font-semibold text-stone-900 dark:text-white">{confirmedBooking.paymentRef}</span>
                   </div>
                 )}
               </div>
@@ -407,7 +417,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
               )}
             </div>
 
-            {/* 🌟 1-CLICK WHATSAPP BUTTON (CLICK PAR DIRECT WHATSAPP KHULEGA) */}
+            {/* 🌟 1-CLICK WHATSAPP BUTTON */}
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 type="button"
@@ -671,7 +681,10 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 {/* 1. 10% Token */}
                 <div
-                  onClick={() => setPaymentOption('token_10_percent')}
+                  onClick={() => {
+                    setPaymentOption('token_10_percent');
+                    setUtrError('');
+                  }}
                   className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all relative flex flex-col justify-between ${
                     paymentOption === 'token_10_percent'
                       ? 'bg-white dark:bg-stone-900 border-[#E0A96D] ring-2 ring-[#E0A96D]/40 shadow-sm'
@@ -700,7 +713,10 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
                 {/* 2. Full 100% */}
                 <div
-                  onClick={() => setPaymentOption('full_payment')}
+                  onClick={() => {
+                    setPaymentOption('full_payment');
+                    setUtrError('');
+                  }}
                   className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all flex flex-col justify-between ${
                     paymentOption === 'full_payment'
                       ? 'bg-white dark:bg-stone-900 border-[#E0A96D] ring-2 ring-[#E0A96D]/40 shadow-sm'
@@ -726,7 +742,10 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
                 {/* 3. Pay at Salon */}
                 <div
-                  onClick={() => setPaymentOption('pay_at_salon')}
+                  onClick={() => {
+                    setPaymentOption('pay_at_salon');
+                    setUtrError('');
+                  }}
                   className={`p-3.5 rounded-xl border text-left cursor-pointer transition-all flex flex-col justify-between ${
                     paymentOption === 'pay_at_salon'
                       ? 'bg-white dark:bg-stone-900 border-[#E0A96D] ring-2 ring-[#E0A96D]/40 shadow-sm'
@@ -749,19 +768,21 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 </div>
               </div>
 
-              {/* Dynamic UPI QR Code */}
+              {/* Dynamic NPCI Auto-Amount UPI QR Code */}
               {paymentOption !== 'pay_at_salon' && (
                 <div className="p-4 rounded-2xl bg-white dark:bg-stone-900 border border-[#E0A96D]/30 space-y-4 animate-in fade-in duration-300">
                   <div className="flex flex-col sm:flex-row items-center gap-5">
+                    
+                    {/* Real-time Dynamic Amount QR Code */}
                     <div className="flex flex-col items-center bg-white p-3 rounded-2xl border-2 border-[#E0A96D]/40 shadow-md shrink-0">
                       <img
                         src={qrCodeImageUrl}
                         alt="Khushboo Makeover UPI QR Code"
                         className="w-36 h-36 sm:w-40 sm:h-40 rounded-lg object-contain"
                       />
-                      <div className="mt-1.5 flex items-center gap-1 text-[10px] font-bold text-stone-700">
-                        <QrCode className="w-3 h-3 text-[#B76E79]" />
-                        <span>Scan & Pay ₹{payableNow.toLocaleString()}</span>
+                      <div className="mt-2 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-300 text-emerald-800 text-[11px] font-extrabold flex items-center gap-1 shadow-sm">
+                        <QrCode className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Scan & Pay: ₹{payableNow.toLocaleString()}</span>
                       </div>
                     </div>
 
@@ -775,7 +796,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                         {paymentOption === 'token_10_percent' ? (
                           <>
                             <div className="flex justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400 py-0.5 border-y border-stone-100 dark:border-stone-800">
-                              <span>⚡ 10% Advance Token (Pay Now):</span>
+                              <span>⚡ 10% Advance Token (Auto in QR):</span>
                               <span className="font-serif text-sm">₹{token10Percent.toLocaleString()}</span>
                             </div>
                             <div className="flex justify-between text-[11px] text-stone-500 dark:text-stone-400">
@@ -785,14 +806,24 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                           </>
                         ) : (
                           <div className="flex justify-between text-xs font-bold text-emerald-600 dark:text-emerald-400 py-0.5 border-y border-stone-100 dark:border-stone-800">
-                            <span>Full 100% Payment (Pay Now):</span>
+                            <span>Full 100% Payment (Auto in QR):</span>
                             <span className="font-serif text-sm">₹{totalPrice.toLocaleString()}</span>
                           </div>
                         )}
                       </div>
 
+                      {/* 1-Click Pay on Mobile Direct via UPI App */}
+                      <a
+                        href={dynamicUpiIntentUri}
+                        className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-stone-900 to-stone-800 dark:from-stone-800 dark:to-stone-700 hover:from-black hover:to-stone-900 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95"
+                      >
+                        <Smartphone className="w-3.5 h-3.5 text-[#E0A96D]" />
+                        <span>Pay ₹{payableNow.toLocaleString()} via GPay / PhonePe / Paytm</span>
+                        <ExternalLink className="w-3 h-3 opacity-70" />
+                      </a>
+
                       {/* UPI ID with 1-Click Copy */}
-                      <div className="p-2.5 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 flex items-center justify-between">
+                      <div className="p-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 flex items-center justify-between">
                         <div>
                           <span className="text-[9px] uppercase font-bold text-stone-400 block">Studio UPI ID</span>
                           <span className="font-mono text-xs font-bold text-stone-800 dark:text-stone-200">{SALON_UPI_ID}</span>
@@ -818,18 +849,28 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Transaction ID Input */}
+                  {/* MANDATORY UTR INPUT FOR ONLINE PAYMENTS */}
                   <div className="pt-2 border-t border-stone-100 dark:border-stone-800">
-                    <label className="block text-[11px] font-semibold text-stone-700 dark:text-stone-300 mb-1">
-                      UPI Transaction ID / UTR Number (Optional)
+                    <label className="block text-[11px] font-bold text-stone-800 dark:text-stone-200 mb-1">
+                      UPI Transaction ID / 12-Digit UTR Number * <span className="text-rose-500 font-semibold">(Mandatory for Online Payment)</span>
                     </label>
                     <input
                       type="text"
-                      placeholder="e.g. 423871928392 or UPI Ref Number"
+                      required
+                      placeholder="Enter 12-digit UTR (e.g. 423871928392)"
                       value={paymentRef}
-                      onChange={(e) => setPaymentRef(e.target.value)}
-                      className="w-full px-3.5 py-2 text-xs font-mono rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:border-[#E0A96D]"
+                      onChange={(e) => {
+                        setPaymentRef(e.target.value);
+                        setUtrError('');
+                      }}
+                      className="w-full px-3.5 py-2.5 text-xs font-mono font-semibold rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:border-[#E0A96D] focus:ring-1 focus:ring-[#E0A96D]"
                     />
+                    {utrError && (
+                      <p className="text-xs text-rose-500 font-semibold mt-1 flex items-center gap-1">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        <span>{utrError}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
               )}
@@ -871,7 +912,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                     <span>Reserving...</span>
                   ) : (
                     <>
-                      <span>{paymentOption === 'token_10_percent' ? 'Lock Date (10% Token)' : 'Confirm Reservation'}</span>
+                      <span>{paymentOption === 'token_10_percent' ? 'Lock Date (10% Token)' : paymentOption === 'full_payment' ? 'Pay & Confirm' : 'Confirm Reservation'}</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
