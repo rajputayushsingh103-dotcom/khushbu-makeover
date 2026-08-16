@@ -52,13 +52,12 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
   const [confirmedBooking, setConfirmedBooking] = useState<Appointment | null>(null);
 
   // UPI Configuration
-  const SALON_UPI_ID = info.upiId || info.payment?.upiId || '9598538006@okaxis';
-  const SALON_PAYEE_NAME = info.name || info.payment?.payeeName || "Khushbu Makeover";
+  const SALON_UPI_ID = info.upiId || info.payment?.upiId || 'ayush6242@ptyes';
+  const SALON_PAYEE_NAME = info.name || info.payment?.payeeName || "Ayush Singh";
   const rawDepositPercent = info.depositPercentage || info.payment?.tokenPercentage || 10;
   const depositPercentRate = rawDepositPercent / 100;
   const depositPercentLabel = `${rawDepositPercent}%`;
 
-  // 🌟 Auto-Fill Logged-in User Info & Initial Service
   useEffect(() => {
     try {
       const savedUserStr = localStorage.getItem('km_user');
@@ -143,12 +142,12 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     ? totalPrice
     : 0;
 
-  // ⚡ NPCI Standard Dynamic UPI URI (Exact Amount + Shop Name Pre-Filled)
+  // Standard NPCI Dynamic UPI URI
   const cleanPayeeName = encodeURIComponent(SALON_PAYEE_NAME.replace(/[^a-zA-Z0-9 ]/g, '').trim());
   const cleanTransactionNote = encodeURIComponent(`Booking ${currentService?.title || 'Salon Service'}`);
   const dynamicUpiIntentUri = `upi://pay?pa=${encodeURIComponent(SALON_UPI_ID.trim())}&pn=${cleanPayeeName}&am=${payableNow}&cu=INR&tn=${cleanTransactionNote}`;
   
-  // High-Resolution Dynamic QR Image Code
+  // High-Resolution QR Generator
   const qrCodeImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(dynamicUpiIntentUri)}&margin=8`;
 
   const copyUpiId = () => {
@@ -184,7 +183,6 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     setAppliedDiscount({ code: offer.code, amount: discount });
   };
 
-  // 🌸 SUBMIT & PERMANENTLY SAVE TO USER PROFILE
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setUtrError('');
@@ -193,7 +191,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
       return;
     }
 
-    // 🔒 UTR MANDATORY VALIDATION FOR ONLINE PAYMENTS
+    // Mandatory UTR validation for Online Payments
     if (paymentOption !== 'pay_at_salon' && !paymentRef.trim()) {
       setUtrError('Payment confirm karne ke liye 12-digit UTR / UPI Transaction ID enter karna zaroori hai.');
       return;
@@ -228,7 +226,6 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
         userId: loggedInUserId || undefined
       });
 
-      // 💾 Save Booking directly into Profile LocalStorage
       try {
         const existingBookings = JSON.parse(localStorage.getItem('km_bookings') || '[]');
         const updatedBookings = [newApt, ...existingBookings.filter((b: any) => b.id !== newApt.id)];
@@ -243,7 +240,6 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
 
       setConfirmedBooking(newApt);
 
-      // Trigger Confetti
       try {
         confetti({
           particleCount: 90,
@@ -259,7 +255,6 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     }
   };
 
-  // 📱 WHATSAPP RECEIPT GENERATOR & DIRECT OPEN
   const getWhatsAppUrl = () => {
     if (!confirmedBooking) return '';
     const paymentStatusText = confirmedBooking.paymentOption === 'token_10_percent'
@@ -285,7 +280,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
       `Thank you! My booking is confirmed.`
     );
     
-    const waNumber = (info.whatsapp || '919598538006').replace(/\D/g, '');
+    const waNumber = (info.whatsapp || '918382088707').replace(/\D/g, '');
     return `https://wa.me/${waNumber}?text=${text}`;
   };
 
@@ -297,7 +292,6 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
     }
   };
 
-  // Close modal manually only when user wants
   const handleCloseModal = () => {
     if (confirmedBooking) {
       onAppointmentCreated(confirmedBooking);
@@ -312,7 +306,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
         className="relative w-full max-w-2xl bg-[#FAF7F5] dark:bg-[#1A1818] rounded-3xl shadow-2xl border border-[#E0A96D]/30 text-stone-900 dark:text-stone-100 my-8 overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Top Header Banner */}
+        {/* Header */}
         <div className="bg-gradient-to-r from-[#1E1B1C] via-[#2A2324] to-[#1E1B1C] p-6 sm:p-7 border-b border-[#E0A96D]/30 relative">
           <button
             type="button"
@@ -334,9 +328,9 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
           </p>
         </div>
 
-        {/* Content Body */}
+        {/* Content */}
         {confirmedBooking ? (
-          /* SUCCESS CONFIRMATION RECEIPT */
+          /* Confirmation Receipt View */
           <div className="p-6 sm:p-8 space-y-6 text-center animate-in zoom-in-95 duration-300">
             <div className="w-16 h-16 mx-auto rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center border-2 border-emerald-500 shadow-lg shadow-emerald-500/20">
               <CheckCircle2 className="w-10 h-10 text-emerald-500" />
@@ -382,7 +376,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 </div>
               </div>
 
-              {/* Pre-Booking Token & Balance Breakdown */}
+              {/* Price Breakdown */}
               <div className="p-3.5 rounded-xl bg-[#FAF0E6] dark:bg-[#241F20] border border-[#E0A96D]/30 space-y-1.5">
                 <div className="flex justify-between text-xs">
                   <span className="text-stone-600 dark:text-stone-300 font-medium">
@@ -417,7 +411,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
               )}
             </div>
 
-            {/* 🌟 1-CLICK WHATSAPP BUTTON */}
+            {/* WhatsApp Share & Print */}
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 type="button"
@@ -438,7 +432,6 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
               </button>
             </div>
 
-            {/* Close / Return Button */}
             <div>
               <button
                 type="button"
@@ -450,9 +443,9 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
             </div>
           </div>
         ) : (
-          /* BOOKING FORM */
+          /* Booking Form */
           <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6 max-h-[80vh] overflow-y-auto">
-            {/* Step 1: Service & Stylist Selection */}
+            {/* Service & Stylist */}
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -488,7 +481,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 </div>
               </div>
 
-              {/* Step 2: Date & Time Slot */}
+              {/* Date & Time Slot */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-1.5">
@@ -522,7 +515,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 </div>
               </div>
 
-              {/* Add-ons Selector */}
+              {/* Addons */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2">
                   Enhance Your Ritual (Optional Add-ons)
@@ -556,7 +549,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 </div>
               </div>
 
-              {/* Step 3: Customer Details */}
+              {/* Guest Info */}
               <div className="pt-2 border-t border-stone-200 dark:border-stone-800 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
                   Guest Information
@@ -584,7 +577,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                       <input
                         type="tel"
                         required
-                        placeholder="e.g. +91 98765 43210"
+                        placeholder="e.g. +91 8382088707"
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         className="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:border-[#E0A96D]"
@@ -613,7 +606,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                     <label className="block text-[11px] text-stone-500 dark:text-stone-400 mb-1">Special Occasion / Notes</label>
                     <input
                       type="text"
-                      placeholder="e.g. Wedding reception, allergic to latex"
+                      placeholder="e.g. Wedding reception"
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       className="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl bg-white dark:bg-stone-900 border border-stone-300 dark:border-stone-700 text-stone-900 dark:text-white focus:outline-none focus:border-[#E0A96D]"
@@ -622,7 +615,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 </div>
               </div>
 
-              {/* Promo Code Box */}
+              {/* Coupon */}
               <div className="p-3.5 rounded-2xl bg-stone-100 dark:bg-stone-900/60 border border-stone-200 dark:border-stone-800 space-y-2">
                 <div className="flex gap-2">
                   <div className="relative flex-1">
@@ -655,7 +648,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
               </div>
             </div>
 
-            {/* Step 4: Payment Option */}
+            {/* Payment Mode Selection */}
             <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[#FAF0E6] to-[#F5E6D3]/60 dark:from-[#241F20] dark:to-[#2B2325] border border-[#E0A96D]/40 space-y-4 shadow-sm">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -677,9 +670,8 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 </span>
               </div>
 
-              {/* Payment Mode Selection Cards */}
+              {/* Payment Mode Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                {/* 1. 10% Token */}
                 <div
                   onClick={() => {
                     setPaymentOption('token_10_percent');
@@ -711,7 +703,6 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                   </div>
                 </div>
 
-                {/* 2. Full 100% */}
                 <div
                   onClick={() => {
                     setPaymentOption('full_payment');
@@ -740,7 +731,6 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                   </div>
                 </div>
 
-                {/* 3. Pay at Salon */}
                 <div
                   onClick={() => {
                     setPaymentOption('pay_at_salon');
@@ -773,7 +763,7 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                 <div className="p-4 rounded-2xl bg-white dark:bg-stone-900 border border-[#E0A96D]/30 space-y-4 animate-in fade-in duration-300">
                   <div className="flex flex-col sm:flex-row items-center gap-5">
                     
-                    {/* Real-time Dynamic Amount QR Code */}
+                    {/* QR Code */}
                     <div className="flex flex-col items-center bg-white p-3 rounded-2xl border-2 border-[#E0A96D]/40 shadow-md shrink-0">
                       <img
                         src={qrCodeImageUrl}
@@ -812,44 +802,39 @@ export const AppointmentModal: React.FC<AppointmentModalProps> = ({
                         )}
                       </div>
 
-                      {/* 1-Click Pay on Mobile Direct via UPI App */}
-                      <a
-                        href={dynamicUpiIntentUri}
-                        className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-stone-900 to-stone-800 dark:from-stone-800 dark:to-stone-700 hover:from-black hover:to-stone-900 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95"
-                      >
-                        <Smartphone className="w-3.5 h-3.5 text-[#E0A96D]" />
-                        <span>Pay ₹{payableNow.toLocaleString()} via GPay / PhonePe / Paytm</span>
-                        <ExternalLink className="w-3 h-3 opacity-70" />
-                      </a>
-
-                      {/* UPI ID with 1-Click Copy */}
-                      <div className="p-2 rounded-xl bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 flex items-center justify-between">
-                        <div>
-                          <span className="text-[9px] uppercase font-bold text-stone-400 block">Studio UPI ID</span>
-                          <span className="font-mono text-xs font-bold text-stone-800 dark:text-stone-200">{SALON_UPI_ID}</span>
+                      {/* 1-Click Copy UPI ID & Instructions */}
+                      <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-800/80 border border-stone-200 dark:border-stone-700 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <span className="text-[9px] uppercase font-bold text-stone-400 block">UPI ID / VPA</span>
+                            <span className="font-mono text-xs font-bold text-stone-800 dark:text-stone-200">{SALON_UPI_ID}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={copyUpiId}
+                            className="px-3 py-1.5 rounded-lg bg-[#E0A96D] hover:bg-[#C58F5E] text-stone-950 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer shadow-sm active:scale-95"
+                          >
+                            {isCopiedUPI ? (
+                              <>
+                                <Check className="w-3.5 h-3.5 text-stone-950 stroke-[3]" />
+                                <span>Copied!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3.5 h-3.5" />
+                                <span>Copy UPI ID</span>
+                              </>
+                            )}
+                          </button>
                         </div>
-                        <button
-                          type="button"
-                          onClick={copyUpiId}
-                          className="px-2.5 py-1 rounded-lg bg-[#E0A96D]/15 hover:bg-[#E0A96D]/30 text-[#8C5E35] dark:text-[#E0A96D] text-xs font-semibold flex items-center gap-1 transition-colors cursor-pointer"
-                        >
-                          {isCopiedUPI ? (
-                            <>
-                              <Check className="w-3.5 h-3.5 text-emerald-600" />
-                              <span className="text-emerald-600">Copied!</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3.5 h-3.5" />
-                              <span>Copy ID</span>
-                            </>
-                          )}
-                        </button>
+                        <p className="text-[10px] text-stone-500 dark:text-stone-400 leading-tight">
+                          💡 <strong>How to Pay:</strong> UPI ID copy karke Paytm/GPay mein "To UPI ID" par paste karein ya upar diya gaya QR code scan karein.
+                        </p>
                       </div>
                     </div>
                   </div>
 
-                  {/* MANDATORY UTR INPUT FOR ONLINE PAYMENTS */}
+                  {/* Mandatory UTR Input */}
                   <div className="pt-2 border-t border-stone-100 dark:border-stone-800">
                     <label className="block text-[11px] font-bold text-stone-800 dark:text-stone-200 mb-1">
                       UPI Transaction ID / 12-Digit UTR Number * <span className="text-rose-500 font-semibold">(Mandatory for Online Payment)</span>
