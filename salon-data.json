@@ -1,6 +1,28 @@
 {
   "appointments": [
     {
+      "id": "apt-1786870973417",
+      "bookingCode": "KM-156900",
+      "name": "Ayush singh",
+      "phone": "8382088707",
+      "email": "rajputayushsingh102@gmail.com",
+      "serviceId": "threading",
+      "serviceName": "Threading",
+      "servicePrice": 20,
+      "date": "2026-08-17",
+      "timeSlot": "11:00 AM - 1:00 PM",
+      "stylist": "Khushboo Singh (Celebrity Master Artist)",
+      "addons": [],
+      "totalPrice": 20,
+      "paymentOption": "pay_at_salon",
+      "advancePaid": 0,
+      "remainingDue": 20,
+      "paymentRef": "",
+      "message": "",
+      "status": "confirmed",
+      "createdAt": "2026-08-16T09:02:53.417Z"
+    },
+    {
       "id": "apt-1786865696175",
       "bookingCode": "KM-888463",
       "name": "Ayush singh",
