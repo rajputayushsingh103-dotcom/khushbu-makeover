@@ -65,7 +65,7 @@ export const SALON_INFO: SalonInfo = {
   }
 };
 
-// 🌸 ALL 14 SERVICES FULLY CONFIGURED
+// 🌸 ALL 14 SERVICES WITH UPDATED PRICES
 export const INITIAL_SERVICES: Service[] = [
   {
     id: 'bridal-makeup',
@@ -75,8 +75,8 @@ export const INITIAL_SERVICES: Service[] = [
     description: 'Complete royal bridal makeover with HD Airbrush, lashes, jewelry setting, and bridal dupatta drapery.',
     longDescription: "Our signature bridal package. Includes pre-makeup skin prep, waterproof 24-hour HD base, 3D mink eyelashes, customized bridal hair styling, jewelry placement, and premium dupatta draping.",
     duration: '180 mins',
-    price: 14999,
-    originalPrice: 18000,
+    price: 12000,
+    originalPrice: 16000,
     image: 'https://images.unsplash.com/photo-1596704017254-9b121068fb31?auto=format&fit=crop&w=1000&q=80',
     benefits: ['24-Hour Waterproof Stay', 'Airbrush HD Flawless Base', 'Complete Hair Styling & Dupatta Draping', 'Complimentary Touch-up Kit'],
     productsUsed: ['Huda Beauty', 'MAC', 'Charlotte Tilbury', 'Dior Backstage', 'NARS', 'Estée Lauder'],
@@ -92,8 +92,8 @@ export const INITIAL_SERVICES: Service[] = [
     description: 'Glamorous party, engagement & reception makeup with HD finish, hairstyling, and eye aesthetics.',
     longDescription: 'Look stunning at any celebration with luminous foundation, tailored smoky or shimmer eye makeup, brow sculpting, and elegant curls or blowout styling.',
     duration: '90 mins',
-    price: 2499,
-    originalPrice: 3500,
+    price: 1500,
+    originalPrice: 2500,
     image: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1000&q=80',
     benefits: ['12-Hour Fresh Hold', 'Customized Eye Styling', 'Blowdry & Curls Styling', 'Lightweight Feel'],
     productsUsed: ['Kryolan Professional', 'MAC', 'Benefit Cosmetics', 'Rare Beauty'],
@@ -109,8 +109,8 @@ export const INITIAL_SERVICES: Service[] = [
     description: 'Medical-grade vortex exfoliation, painless blackhead extraction, and hyaluronic acid peptide serum infusion.',
     longDescription: 'The ultimate skin rejuvenation therapy. Cleanses clogged pores, removes dead skin cells, extracts deep blackheads, and deeply infuses antioxidants and collagen serums for instant glass skin.',
     duration: '60 mins',
-    price: 2999,
-    originalPrice: 4500,
+    price: 5000,
+    originalPrice: 7000,
     image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1000&q=80',
     benefits: ['Instant Pore Tightening & Glow', 'Zero Redness or Downtime', 'Deep Blackhead/Whitehead Extraction', 'Custom Vitamin & Peptide Infusion'],
     productsUsed: ['HydraFacial MD Serums', 'Dermalogica Pro', 'SkinCeuticals', 'Casmara Algae Mask'],
@@ -118,7 +118,7 @@ export const INITIAL_SERVICES: Service[] = [
     isFeatured: true,
     tag: 'Celebrity Choice'
   },
- {
+  {
     id: 'customized-facial',
     title: 'Customized Facial',
     category: 'skin',
@@ -126,9 +126,8 @@ export const INITIAL_SERVICES: Service[] = [
     description: 'Tailored skin rejuvenation treatment based on your skin type for anti-tan, acne control, or radiant glow.',
     longDescription: 'Customized deep cleansing facial addressing your specific skin concerns—acne, tanning, dark spots, or dryness. Includes face massage, herbal steam, gentle exfoliation, and custom soothing face pack.',
     duration: '60 mins',
-    price: 1499,
-    originalPrice: 2000,
-    // 🌟 100% Verified, Instant Loading Facial Treatment Image
+    price: 500,
+    originalPrice: 800,
     image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1000&q=80',
     benefits: ['Personalized to Your Skin Type', 'Removes Tanning & Dullness', 'Soothing Lymphatic Massage', 'Deep Hydration & Glow'],
     productsUsed: ['O3+ Bridal Pro Matrix', 'Lotus Professional', 'VLCC Gold', 'Cheryls Cosmeceuticals'],
@@ -142,11 +141,11 @@ export const INITIAL_SERVICES: Service[] = [
     description: 'Trendsetting modern haircuts (Layer, Feather, Bob, Advance Styling) with professional blow-dry.',
     longDescription: 'Transform your look with precision haircutting tailored to your face shape. Includes refreshing hair wash, conditioning, advance cutting, and bouncy blow-dry styling.',
     duration: '45 mins',
-    price: 499,
-    originalPrice: 800,
+    price: 150,
+    originalPrice: 250,
     image: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=1000&q=80',
     benefits: ['Personalized Face-Framing Cut', 'Includes Wash & Conditioning', 'Professional Volume Blow-dry', 'Split-ends Removal'],
-    productsUsed: ['L\'Oréal Professionnel', 'Schwarzkopf', 'Moroccanoil'],
+    productsUsed: ["L'Oréal Professionnel", 'Schwarzkopf', 'Moroccanoil'],
     isPopular: true
   },
   {
@@ -157,11 +156,11 @@ export const INITIAL_SERVICES: Service[] = [
     description: 'Deep nourishing hair spa with scalp massage, steam, and intense damage & dandruff repair therapy.',
     longDescription: 'Revitalize dull, frizzy, and damaged hair with deep conditioning cream baths, scalp stimulation, ozone steam infusion, and relaxing neck & shoulder massage.',
     duration: '60 mins',
-    price: 1299,
-    originalPrice: 1800,
+    price: 800,
+    originalPrice: 1200,
     image: 'https://images.unsplash.com/photo-1527799820374-dcf8d9d4a388?auto=format&fit=crop&w=1000&q=80',
     benefits: ['Scalp Detox & Dandruff Control', 'Deep Relaxation Massage', 'Micro-Mist Steam Infusion', 'Silky Smooth Hair Texture'],
-    productsUsed: ['L\'Oréal Mythic Oil', 'Matrix Biolage', 'Schwarzkopf Bonacure', 'Kérastase'],
+    productsUsed: ["L'Oréal Mythic Oil", 'Matrix Biolage', 'Schwarzkopf Bonacure', 'Kérastase'],
     isPopular: true
   },
   {
@@ -172,23 +171,23 @@ export const INITIAL_SERVICES: Service[] = [
     description: 'Global hair color, Balayage, Highlights, and root touch-up with ammonia-free premium shades.',
     longDescription: 'Expert hair coloring customized to your skin tone. From rich chocolate brown, burgundy, and caramel balayage to full gray coverage using bond-protecting safe formulas.',
     duration: '120 mins',
-    price: 1999,
-    originalPrice: 3000,
+    price: 300,
+    originalPrice: 500,
     image: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&w=1000&q=80',
     benefits: ['100% Gray Coverage', 'Ammonia-Free Safe Colors', 'Rich Long-Lasting Gloss', 'Bond Protection Included'],
-    productsUsed: ['L\'Oréal Inoa Ammonia-Free', 'Matrix Socolor', 'Wella Koleston', 'Schwarzkopf Igora'],
+    productsUsed: ["L'Oréal Inoa Ammonia-Free", 'Matrix Socolor', 'Wella Koleston', 'Schwarzkopf Igora'],
     isFeatured: true
   },
   {
     id: 'manicure-pedicure',
     title: 'Manicure + Pedicure',
-    category: 'spa',
+    category: 'nails',
     categoryLabel: 'Hand & Foot Spa',
     description: 'Luxury hand & foot spa with exfoliating scrub, cuticle care, relaxing massage, and nail polish.',
     longDescription: 'Pamper your hands and feet with warm soothing soak, dead skin removal, heel smoothening, exfoliating scrub, deeply moisturizing massage cream, and fresh nail enamel.',
     duration: '75 mins',
-    price: 999,
-    originalPrice: 1500,
+    price: 600,
+    originalPrice: 900,
     image: 'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=1000&q=80',
     benefits: ['Cracked Heel Softening', 'Dead Skin Exfoliation', 'Relaxes Tired Feet & Hands', 'Clean Cuticles & Shiny Nails'],
     productsUsed: ['OPI Professional', 'VLCC Pediglow', 'Sara Beauty', 'Colorbar Polish']
@@ -196,12 +195,12 @@ export const INITIAL_SERVICES: Service[] = [
   {
     id: 'nail-art',
     title: 'Nail Art',
-    category: 'spa',
+    category: 'nails',
     categoryLabel: 'Nail Studio',
     description: 'Gel nail extensions, chrome nails, 3D bridal nail art, glitter ombré, and French tips.',
     longDescription: 'Custom sculpted gel or acrylic nail extensions embellished with stones, glitter ombré, French tips, and stylish nail designs lasting up to 4 weeks.',
     duration: '45 mins',
-    price: 799,
+    price: 800,
     originalPrice: 1200,
     image: 'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1000&q=80',
     benefits: ['Long-Lasting Chip-Resistant Gel', 'Custom Stone & Glitter Designs', 'High Gloss Mirror Finish', 'Strengthens Natural Nails'],
@@ -215,8 +214,8 @@ export const INITIAL_SERVICES: Service[] = [
     description: 'Instant sun-tan removal and skin brightening with mild herbal bleach & d-tan pack.',
     longDescription: 'Effectively clears stubborn outdoor sun tanning, lightens facial hair to match skin tone, and deeply refreshes face and neck with active de-tan clay packs.',
     duration: '40 mins',
-    price: 699,
-    originalPrice: 1000,
+    price: 600,
+    originalPrice: 900,
     image: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1000&q=80',
     benefits: ['Instant Tan Removal', 'Skin Brightening & Glow', 'Herbal & Safe Formula', 'Evens Out Skin Tone'],
     productsUsed: ['O3+ D-Tan Pack', 'OxyGlow Herbal Bleach', 'Cheryls Tan Clear']
@@ -229,8 +228,8 @@ export const INITIAL_SERVICES: Service[] = [
     description: 'Hygienic Full Body / Arms / Legs waxing with premium Rica & Honey wax for smooth, silky skin.',
     longDescription: 'Gentle, pain-minimized waxing using disposable strips and nourishing pre/post-wax oils. Removes unwanted hair from roots, leaving skin hair-free for 3 to 4 weeks.',
     duration: '45 mins',
-    price: 599,
-    originalPrice: 900,
+    price: 300,
+    originalPrice: 500,
     image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1000&q=80',
     benefits: ['Hygienic Disposable Strips', 'Smooth Hair-Free Skin for 3-4 Weeks', 'Less Pain with Premium Wax', 'Post-Wax Soothing Oil'],
     productsUsed: ['Rica Liposoluble Wax', 'Honey Herbal Wax', 'Aloe Vera Soothing Gel']
@@ -243,8 +242,8 @@ export const INITIAL_SERVICES: Service[] = [
     description: 'Precision eyebrow shaping, upper lip, forehead, and full-face threading with minimal pain.',
     longDescription: 'Expert eyebrow architecture and facial hair removal using 100% sanitized cotton thread and cooling astringent soothing lotion.',
     duration: '15 mins',
-    price: 99,
-    originalPrice: 150,
+    price: 20,
+    originalPrice: 50,
     image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1000&q=80',
     benefits: ['Sharp Precision Brow Arch', 'Fast & Minimal Pain', '100% Hygienic Cotton Thread', 'Includes Soothing Gel'],
     productsUsed: ['Organic Cotton Thread', 'Ayur Astringent', 'Rose Water Toner']
@@ -257,8 +256,8 @@ export const INITIAL_SERVICES: Service[] = [
     description: 'Exquisite bridal & festive Kaveri organic henna designs with dark, long-lasting rich stain.',
     longDescription: 'Handcrafted floral, Arabic, bridal figures, and traditional Indian mehendi patterns applied with fresh organic Kaveri henna cones with guaranteed dark mahogany color.',
     duration: '90 mins',
-    price: 1499,
-    originalPrice: 2000,
+    price: 500,
+    originalPrice: 800,
     image: 'https://images.unsplash.com/photo-1590439471364-192aa70c0b53?auto=format&fit=crop&w=1000&q=80',
     benefits: ['100% Pure Kaveri Organic Henna', 'Guaranteed Dark Rich Stain', 'Intricate Arabic & Traditional Designs', 'Chemical Free & Skin Safe'],
     productsUsed: ['Kaveri Organic Henna Cone', 'Eucalyptus Essential Oil', 'Lemon-Sugar Sealant'],
@@ -268,13 +267,13 @@ export const INITIAL_SERVICES: Service[] = [
   {
     id: 'ear-lobe-piercing',
     title: 'Ear Lobe Piercing',
-    category: 'spa',
+    category: 'skin',
     categoryLabel: 'Piercing Studio',
     description: 'Safe, 100% hygienic, painless earlobe and nose piercing with sterilized gold/silver studs.',
     longDescription: 'Painless and accurate earlobe/nose piercing done with modern sterilized piercing apparatus. Includes skin antiseptic prep and choice of hypoallergenic medical-grade starter studs.',
     duration: '20 mins',
-    price: 399,
-    originalPrice: 600,
+    price: 200,
+    originalPrice: 350,
     image: 'https://images.unsplash.com/photo-1535295972055-1c762f4483e5?auto=format&fit=crop&w=1000&q=80',
     benefits: ['Painless & Fast Procedure', '100% Sterilized Equipment', 'Medical-grade Hypoallergenic Studs', 'Aftercare Antiseptic Solution'],
     productsUsed: ['Sterilized Piercing Studs', 'Antiseptic Solution', 'Healing Cream']
