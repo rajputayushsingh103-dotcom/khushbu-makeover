@@ -27,7 +27,7 @@ import { ContactSection } from './components/ContactSection';
 import { FaqSection } from './components/FaqSection';
 import { BeforeAfterSlider } from './components/BeforeAfterSlider';
 import { Footer } from './components/Footer';
-import { WhatsAppFloatingButton } from './components/WhatsAppFloatingButton';
+import { FloatingSocialWidget } from './components/FloatingSocialWidget';
 import { ScrollToTop } from './components/ScrollToTop';
 import { LegalModals } from './components/LegalModals';
 
@@ -827,8 +827,8 @@ export default function App() {
         onOpenTerms={() => setLegalModalType('terms')}
       />
 
-      {/* Floating Action Utilities */}
-      <WhatsAppFloatingButton />
+      {/* ⭐ Floating Action Utilities: WhatsApp & Instagram Multi-Button */}
+      <FloatingSocialWidget />
       <ScrollToTop />
 
       {/* ========================================================================= */}
@@ -891,7 +891,7 @@ export default function App() {
         setIsLoggedIn={setIsAdminLoggedIn}
       />
 
-      {/* 5. Legal Terms & Privacy Modal */}
+      {/* 6. Legal Terms & Privacy Modal */}
       <LegalModals
         type={legalModalType}
         onClose={() => setLegalModalType(null)}
